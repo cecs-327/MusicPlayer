@@ -1,0 +1,19 @@
+body{
+    text-align: center;
+}
+
+.registration-input {
+    padding: 8px;
+}
+
+.registration-link{
+    padding: 8px;
+}
+
+label {
+    padding-right: 12px;
+}
+
+#regButton:hover{
+    cursor: pointer;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MusicPlaya</title>
+        <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
+        <link rel="stylesheet" href="../styles/login.css">
+    </head>
+
+    <body>
+        <h1>Login</h1>
+        <div class="login-input">
+            <label>Enter a UserName: </label>
+            <input type="text" id='UserName' placeholder="UserName">
+        </div>
+        <div class="login-input">
+            <label>Enter a Password:</label>
+            <input type="password" id='Password' placeholder="Password">
+        </div>
+        <div class="login-button">
+            <button id="logButton" onclick="login()">Login</button>
+        </div>
+        <div class="login-link">
+            <p>Return to <a href='./registration.html'>Registration</a></p>
+        </div>
+
+        <script src="../service/login.js"></script>
+    </body>
+</html>

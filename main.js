@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 
 //If this window object is not created the browser window will be removed automatically by js garbage collector
-let win ;
+let win;
 
 function createWindow() {
     //Create Browser Window
@@ -16,7 +16,7 @@ function createWindow() {
 
     //Load index file
     win.loadURL(url.format({
-        pathname: path.join(__dirname, './view/index.html'),
+        pathname: path.join(__dirname, './view/registration.html'),
         protocol: 'file',
         slashes: true
     }));
