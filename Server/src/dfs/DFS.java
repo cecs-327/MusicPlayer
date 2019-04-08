@@ -244,7 +244,7 @@ public class DFS
     int port;
     Chord  chord;
     FilesJson filesJson;
-
+//l
     private long md5(String objectName)
     {
         try
