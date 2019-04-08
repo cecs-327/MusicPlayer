@@ -1,3 +1,4 @@
+package dfs;
 
 import java.rmi.*;
 import java.net.*;
@@ -7,7 +8,7 @@ import java.nio.file.*;
 import java.math.BigInteger;
 import java.security.*;
 import com.google.gson.Gson;
-import java.io.InputStream;
+
 import java.util.*;
 import java.time.LocalDateTime;
 
@@ -397,36 +398,37 @@ public class DFS
  */
  	public void delete(String fileName) throws Exception {
 
-	 for (int i = 0; i < filesJson.getSize(); i++) {
-
-		 if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)) {
-
-			 // get metadata information
-			 long guidPort = md5("" + port);
-
-			 // get list of pages from the file
-			 ArrayList<PagesJson> pagesList = filesJson.getFileJson(i).getPages();
-
-			 //iterate through all pages of the file
-			 for (int k = 0; k < pagesList.size(); k++) {
-
-				 //get the specified page info from file
-				 PagesJson pagesRead = pagesList.get(k);
-				 long pageGuid = pagesRead.getGuid();
-
-				 // remove appended file in directory
-				 String userDir = System.getProperty("user.dir");
-				 File file = new File(userDir + "/" + guidPort + "/repository/" + pageGuid);
-				 file.delete();
-
-				 // remove from chord
-				 ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
-				 peer.delete(pageGuid);
+		 for (int i = 0; i < filesJson.getSize(); i++) {
+		
+			 if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)) {
+		
+					 // get metadata information
+				 long guidPort = md5("" + port);
+			
+				 // get list of pages from the file
+				 ArrayList<PagesJson> pagesList = filesJson.getFileJson(i).getPages();
+			
+				 //iterate through all pages of the file
+				 for (int k = 0; k < pagesList.size(); k++) {
+			
+					 //get the specified page info from file
+					 PagesJson pagesRead = pagesList.get(k);
+					 long pageGuid = pagesRead.getGuid();
+			
+					 // remove appended file in directory
+					 String userDir = System.getProperty("user.dir");
+					 File file = new File(userDir + "/" + guidPort + "/repository/" + pageGuid);
+					 file.delete();
+			
+					 // remove from chord
+					 ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
+					 peer.delete(pageGuid);
+				 }
+			
+				 // remove JSONFile from files
+				 filesJson.file.remove(filesJson.getFileJson(i));
+		
 			 }
-
-			 // remove JSONFile from files
-			 filesJson.file.remove(filesJson.getFileJson(i));
-
 		 }
 	 }
 
@@ -461,7 +463,7 @@ public class DFS
         return rifs;
     }
 
-    public RemoteInputFileStream tail(String fileName) {
+    public RemoteInputFileStream tail(String fileName) throws Exception {
     	RemoteInputFileStream tail = null;
     	for(int i = 0; i < filesJson.getSize(); i++) {
     		if(filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)) {
