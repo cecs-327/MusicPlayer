@@ -34,10 +34,10 @@ public class DFSCommand
             	dfs.create(result[1]);
                 System.out.println("File created");
             }
-            if (result[0].equals("create"))
+            if (result[0].equals("ls"))
             {
-            	dfs.create(result[1]);
-            	System.out.println("File created");
+                System.out.println("Listing Files: ");
+                dfs.lists();
             }
             if (result[0].equals("append"))
             {
