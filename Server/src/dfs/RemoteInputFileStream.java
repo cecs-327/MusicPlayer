@@ -159,7 +159,7 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
 
      
       /*
-       * when this conditino is true we will have 
+       * when this condition is true we will have 
        * read all the data
       */
 	  if (pos >= total)
