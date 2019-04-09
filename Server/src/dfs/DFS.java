@@ -430,6 +430,9 @@ public class DFS
 					 PagesJson pagesRead = pagesList.get(k);
 					 long pageGuid = pagesRead.getGuid();
 			
+
+					 // remove JSONFile from files
+					 
 					 // remove appended file in directory
 					 String userDir = System.getProperty("user.dir");
 					 File file = new File(userDir + "/" + guidPort + "/repository/" + pageGuid);
@@ -440,9 +443,9 @@ public class DFS
 					 peer.delete(pageGuid);
 				 }
 			
-				 // remove JSONFile from files
 				 filesJson.file.remove(filesJson.getFileJson(i));
-		
+	             writeMetaData(filesJson);
+
 			 }
 		 }
 	 }
