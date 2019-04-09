@@ -358,8 +358,19 @@ public class DFS
  */
     public void move(String oldName, String newName) throws Exception
     {
-        // TODO:  Change the name in Metadata
-        // Write Metadata
+    	boolean found = false;
+    	for(int i = 0; i < filesJson.getSize(); i++){
+    		if(filesJson.getFileJson(i).getName().equalsIgnoreCase(oldName)){
+    			filesJson.getFileJson(i).setName(newName);
+    			String timeOfWrite = LocalDateTime.now().toString();
+    			filesJson.getFileJson(i).setWriteTS(timeOfWrite);
+    			found = true;
+    		}
+    	}
+    	if(found)
+    		System.out.println(oldName + " has been rewritten to " + newName);
+    	else
+    		System.out.println(oldName + " not found");
     }
 
 

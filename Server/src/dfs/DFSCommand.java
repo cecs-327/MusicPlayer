@@ -25,21 +25,21 @@ public class DFSCommand
             {
                 dfs.join("127.0.0.1", Integer.parseInt(result[1]));
             }
-            if (result[0].equals("print"))
+            else if (result[0].equals("print"))
             {
                 dfs.print();
             }
-            if (result[0].equals("create"))
+            else if (result[0].equals("create"))
             {
             	dfs.create(result[1]);
                 System.out.println("File created");
             }
-            if (result[0].equals("ls"))
+            else if (result[0].equals("ls"))
             {
                 System.out.println("Listing Files: ");
                 dfs.lists();
             }
-            if (result[0].equals("append"))
+            else if (result[0].equals("append"))
             {
 
             	RemoteInputFileStream input = new RemoteInputFileStream(result[2]);
@@ -47,13 +47,13 @@ public class DFSCommand
                 System.out.println("page added");
 
             }
-            if (result[0].equals("delete"))
+            else if (result[0].equals("delete"))
             {
               dfs.delete(result[1]);
               System.out.println("Deleted "+result[1]+" from the page");
             }
 
-            if (result[0].equals("read"))
+            else if (result[0].equals("read"))
             {
                 int pageNumber = Integer.parseInt(result[2]);
                 int i;
@@ -66,7 +66,7 @@ public class DFSCommand
                 System.out.println("page read");
 
             }
-            if (result[0].equals("head"))
+            else if (result[0].equals("head"))
             {
             	RemoteInputFileStream head = dfs.read(result[1], 1);
             	head.connect();
@@ -78,7 +78,7 @@ public class DFSCommand
             	System.out.println("read head");
             }
 
-            if (result[0].equals("tail"))
+            else if (result[0].equals("tail"))
             {
             	RemoteInputFileStream tail = dfs.tail(result[1]);
             	tail.connect();
@@ -89,9 +89,13 @@ public class DFSCommand
             	System.out.println();
             	System.out.println("read tail");
             }
-            if (result[0].equals("leave"))
+            else if (result[0].equals("leave"))
             {
                 dfs.leave();
+            }
+            else if (result[0].equals("move"))
+            {
+            	dfs.move(result[1], result[2]);
             }
             line=buffer.readLine();
         }
