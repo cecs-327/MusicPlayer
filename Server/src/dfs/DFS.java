@@ -244,7 +244,7 @@ public class DFS
     int port;
     Chord  chord;
     FilesJson filesJson;
-
+//l
     private long md5(String objectName)
     {
         try
@@ -370,9 +370,13 @@ public class DFS
  */
     public String lists() throws Exception
     {
-        String listOfFiles = "";
-
-        return listOfFiles;
+      String listOfFiles = "";
+      for (int i = 0; i < filesJson.getSize(); i++) {  
+        String filename = filesJson.getFileJson(i).getName();
+        listOfFiles = listOfFiles + " " + filename + "\n";
+      }
+      System.out.println(listOfFiles);
+      return listOfFiles;
     }
 
 /**
