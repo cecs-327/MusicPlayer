@@ -286,7 +286,7 @@ public class DFS
 
 /**
  * Join the chord
-  *
+ *
  */
     public void join(String Ip, int port) throws Exception
     {
@@ -468,6 +468,7 @@ public class DFS
                         pageToRead.setReadTS(timeOfRead);
                         filesJson.getFileJson(i).setReadTS(timeOfRead);
                         Long pageGUID = md5(fileName + pageToRead.getCreationTS());
+                        System.out.println("Read pageGUID: " + pageGUID);
                         ChordMessageInterface peer = chord.locateSuccessor(pageGUID);
                         rifs = peer.get(pageGUID);
                     }
@@ -523,7 +524,7 @@ public class DFS
         		filesJson.getFileJson(i).addSize(sizeOfFile);
 
         		//create the page metadata information
-        		String objectName = filename + LocalDateTime.now();
+        		String objectName = filename + timeOfAppend;
         		Long guid = md5(objectName);
 
         		ChordMessageInterface peer = chord.locateSuccessor(guid);
