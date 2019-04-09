@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.io.FileReader;
-
+import services.*;
 import java.io.FileNotFoundException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import dfs.DFS;
 
 
 public class Main {
@@ -15,6 +17,7 @@ public class Main {
       /**
      * Play a given audio file.
      * @param audioFilePath Path of the audio file.
+     * @throws Exception 
      */
 //    void mp3play(Long file, ProxyInterface proxy) {
 //        try {
@@ -32,7 +35,7 @@ public class Main {
      *  The function test the classes Dispatcher, SongDispatcher 
      *  and CECS327InputStream. Proxy is incomplete.
     */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // Integer i;
         // Gson gson = new Gson();
         // Dispatcher dispatcher = new Dispatcher();
@@ -46,6 +49,10 @@ public class Main {
 
         SocketLayer sl = new SocketLayer();
         sl.run();
+        
+        pathHolder.dfs = new DFS(pathHolder.portNum);
+		//Make sure DFS where files are kept is always started on the same port number as portToJoin
+		pathHolder.dfs.join("127.0.0.1", pathHolder.portToJoin);
         // System.out.println("End of the song");
 
     }

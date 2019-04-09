@@ -503,6 +503,7 @@ public class DFS
  * @param filename Name of the file
  * @param data RemoteInputStream.
  */
+    
     public void append(String filename, RemoteInputFileStream data) throws Exception
     {
 
@@ -540,6 +541,12 @@ public class DFS
 
 
     }
+
+
+
+	public FilesJson getFilesJson() {
+		return filesJson;
+	}
 
 
 }
