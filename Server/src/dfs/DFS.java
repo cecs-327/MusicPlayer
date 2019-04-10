@@ -401,8 +401,6 @@ public class DFS
     public void create(String fileName) throws Exception
     {
     	filesJson = readMetaData();
-          // TODO: Create the file fileName by adding a new entry to the Metadata
-         // Write Metadata
     	FileJson fileJson = new FileJson();
     	fileJson.setName(fileName);
     	filesJson.addFile(fileJson);
