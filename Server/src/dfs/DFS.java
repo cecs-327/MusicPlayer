@@ -358,12 +358,14 @@ public class DFS
  */
     public void move(String oldName, String newName) throws Exception
     {
+    	filesJson = readMetaData();
     	boolean found = false;
     	for(int i = 0; i < filesJson.getSize(); i++){
     		if(filesJson.getFileJson(i).getName().equalsIgnoreCase(oldName)){
     			filesJson.getFileJson(i).setName(newName);
     			String timeOfWrite = LocalDateTime.now().toString();
     			filesJson.getFileJson(i).setWriteTS(timeOfWrite);
+    			writeMetaData(filesJson);
     			found = true;
     		}
     	}
@@ -381,13 +383,14 @@ public class DFS
  */
     public String lists() throws Exception
     {
-      String listOfFiles = "";
-      for (int i = 0; i < filesJson.getSize(); i++) {  
-        String filename = filesJson.getFileJson(i).getName();
-        listOfFiles = listOfFiles + " " + filename + "\n";
-      }
-      System.out.println(listOfFiles);
-      return listOfFiles;
+    	filesJson = readMetaData();
+    	String listOfFiles = "";
+    	for (int i = 0; i < filesJson.getSize(); i++) {  
+    		String filename = filesJson.getFileJson(i).getName();
+    		listOfFiles = listOfFiles + " " + filename + "\n";
+    	}
+    	System.out.println(listOfFiles);
+    	return listOfFiles;
     }
 
 /**
@@ -397,6 +400,7 @@ public class DFS
  */
     public void create(String fileName) throws Exception
     {
+    	filesJson = readMetaData();
           // TODO: Create the file fileName by adding a new entry to the Metadata
          // Write Metadata
     	FileJson fileJson = new FileJson();
@@ -412,7 +416,7 @@ public class DFS
  * @param filename Name of the file
  */
  	public void delete(String fileName) throws Exception {
-
+ 		filesJson = readMetaData();
 		 for (int i = 0; i < filesJson.getSize(); i++) {
 		
 			 if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)) {
@@ -459,6 +463,7 @@ public class DFS
     public RemoteInputFileStream read(String fileName, int pageNumber) throws Exception
     {
         //List of pages starts at 0 so decrement it
+    	filesJson = readMetaData();
         pageNumber--;
         RemoteInputFileStream rifs = null;
         for(int i = 0; i < filesJson.getSize(); i++){
@@ -483,6 +488,7 @@ public class DFS
     }
 
     public RemoteInputFileStream tail(String fileName) throws Exception {
+    	filesJson = readMetaData();
     	RemoteInputFileStream tail = null;
     	for(int i = 0; i < filesJson.getSize(); i++) {
     		if(filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)) {
@@ -510,7 +516,7 @@ public class DFS
     
     public void append(String filename, RemoteInputFileStream data) throws Exception
     {
-
+    	filesJson = readMetaData();
         for(int i = 0; i < filesJson.getSize();i++)
         {
         	//append the page to the file specified by the user
