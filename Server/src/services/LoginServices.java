@@ -2,9 +2,12 @@ package services;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
+import dfs.DFS;
 import gson.UserPlaylists;
 import gson.Users;
 
@@ -22,15 +25,17 @@ public class LoginServices {
 	
 	public List<Users> getUsers() {
 		List<Users> userList = new ArrayList<Users>();
-		String userFPath = pathHolder.testUsers;
+		JsonParser parser = new JsonParser();
 		try {
-			BufferedReader bufReader = new BufferedReader(new FileReader(userFPath));
-			Type jsonListType = new TypeToken<List<Users>>() {}.getType();
-            userList = new Gson().fromJson(bufReader, jsonListType);
-            
+			String users = pathHolder.readFile("user");
+			JsonArray userFile = parser.parse(users).getAsJsonArray();
+			for(int i = 0; i < userFile.size(); i++) {
+				Users temp = new Users(userFile.get(i).getAsJsonObject().get("UserName").getAsString(), userFile.get(i).getAsJsonObject().get("Password").getAsString());
+				userList.add(temp);
+			}            
             return userList;
-		}catch(FileNotFoundException e) {
-			e.getStackTrace();
+		}catch(Exception e) {
+			System.out.println(e);
 			return userList;
         }
 	}
@@ -59,4 +64,5 @@ public class LoginServices {
 		
 		return JSONoutput;
 	}
+	 
 }
