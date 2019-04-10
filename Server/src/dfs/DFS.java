@@ -550,11 +550,4 @@ public class DFS
 
     }
 
-
-
-	public FilesJson getFilesJson() {
-		return filesJson;
-	}
-
-
 }
