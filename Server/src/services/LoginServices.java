@@ -27,7 +27,7 @@ public class LoginServices {
 		List<Users> userList = new ArrayList<Users>();
 		JsonParser parser = new JsonParser();
 		try {
-			String users = pathHolder.readFile("user");
+			String users = pathHolder.readFile(pathHolder.userFile);
 			JsonArray userFile = parser.parse(users).getAsJsonArray();
 			for(int i = 0; i < userFile.size(); i++) {
 				Users temp = new Users(userFile.get(i).getAsJsonObject().get("UserName").getAsString(), userFile.get(i).getAsJsonObject().get("Password").getAsString());

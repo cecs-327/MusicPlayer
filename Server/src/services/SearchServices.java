@@ -123,12 +123,9 @@ public class SearchServices {
     public void getSongs() {
     	JsonParser parser = new JsonParser();
     	try {
-    		String jsonfile = pathHolder.readFile("songs");
+    		String jsonfile = pathHolder.readFile(pathHolder.songFile);
     		System.out.print(jsonfile.substring(0, 200));
-//    		System.out.println("Result of Read:\n" + jsonfile);
-//            String jsonfile = new String(Files.readAllBytes(Paths.get(pathHolder.songPath)));
             musicFile = parser.parse(jsonfile).getAsJsonArray();
-            //System.out.println(jsonArray);
 
         } catch (Exception e)
         {

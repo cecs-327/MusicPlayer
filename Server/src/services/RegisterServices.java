@@ -23,7 +23,7 @@ public class RegisterServices{
 		List<Users> userList = new ArrayList<Users>();
 		JsonParser parser = new JsonParser();
 		try {
-			String users = pathHolder.readFile("user");
+			String users = pathHolder.readFile(pathHolder.userFile);
 			JsonArray userFile = parser.parse(users).getAsJsonArray();
 			for(int i = 0; i < userFile.size(); i++) {
 				Users temp = new Users(userFile.get(i).getAsJsonObject().get("UserName").getAsString(), userFile.get(i).getAsJsonObject().get("Password").getAsString());
@@ -40,7 +40,7 @@ public class RegisterServices{
         List<UserPlaylists> userPlaylistList = new ArrayList<UserPlaylists>();
         JsonParser parser = new JsonParser();
         try{
-            String UserPlaylists = pathHolder.readFile("playlist");
+            String UserPlaylists = pathHolder.readFile(pathHolder.playlistFile);
             JsonArray playlistsFile = parser.parse(UserPlaylists).getAsJsonArray();
             for(int i = 0; i < playlistsFile.size(); i++){
                 UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
@@ -69,7 +69,7 @@ public class RegisterServices{
         UserPlaylists newPlaylistList = new UserPlaylists(username);
         userPlaylistList.add(newPlaylistList);
         try {
-        	pathHolder.writeFile("playlist",gson.toJson(userPlaylistList));
+        	pathHolder.writeFile(pathHolder.playlistFile,gson.toJson(userPlaylistList));
         } catch(Exception e) {
         	System.out.println(e);
         }
@@ -95,7 +95,7 @@ public class RegisterServices{
             userList.add(newUser);
             try {
             	Gson gson = new Gson();
-            	pathHolder.writeFile("user", gson.toJson(userList));
+            	pathHolder.writeFile(pathHolder.userFile, gson.toJson(userList));
             	successfulRegister = true;
                 data.addProperty("success", successfulRegister);
                 data.addProperty("UserName", username);

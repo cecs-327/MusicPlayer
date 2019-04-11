@@ -19,10 +19,13 @@ public class pathHolder {
 	public static String testPlaylists = userDir + "/src/testplaylists.json";
 	public static String mp3Directory = userDir + "/src/mp3/";
 	public static String dataDirectory = userDir + "/src/data/";
-	public static String songPath = userDir + "/src/data/musicComplete.json";
+	public static String songPath = userDir + "/src/data/musicAlmostComplete.json";
 	public static DFS dfs;
 	public static int portNum = 12345;
 	public static int portToJoin = 1234;
+	public static String songFile = "songs";
+	public static String userFile = "user";
+	public static String playlistFile = "playlist";
 
   public static String readFile(String fileName) throws Exception {
 	  FilesJson filesJson = dfs.readMetaData();
@@ -46,6 +49,21 @@ public class pathHolder {
           }
 	  }
 	  return fileInfo;
+  }
+  
+  public static void initalizeDFS() throws Exception
+  {
+	  dfs = new DFS(portNum);
+	  dfs.join("127.0.0.1", portToJoin);
+	  dfs.create(userFile);
+	  dfs.create(playlistFile);
+	  dfs.create(songFile);
+	  RemoteInputFileStream input = new RemoteInputFileStream(testUsers);
+	  dfs.append(userFile, input);
+	  input = new RemoteInputFileStream(testPlaylists);
+	  dfs.append(playlistFile, input);
+	  input = new RemoteInputFileStream(songPath);
+	  dfs.append(songFile, input);
   }
   
   public static void writeFile(String fileName, String fileInfo) throws Exception 
