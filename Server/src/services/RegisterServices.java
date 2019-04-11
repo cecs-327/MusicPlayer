@@ -67,15 +67,15 @@ public class RegisterServices{
         return isUnique;
     }
     public void initiateNewUserPlaylist(String username){
+    	Gson gson = new Gson();
+    	
         List<UserPlaylists> userPlaylistList = getUserPlaylists();
         UserPlaylists newPlaylistList = new UserPlaylists(username);
         userPlaylistList.add(newPlaylistList);
-        try(Writer w = new FileWriter(playlistPath)) {
-            Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-            gsonWriter.toJson(userPlaylistList, w);
-        }
-        catch(IOException e){
-            e.printStackTrace();
+        try {
+        	pathHolder.writeFile("playlist",gson.toJson(userPlaylistList));
+        } catch(Exception e) {
+        	System.out.println(e);
         }
     }
     public String registerUser(String username, String password){
@@ -100,10 +100,9 @@ public class RegisterServices{
         else{
             Users newUser = new Users(username, password);
             userList.add(newUser);
-            try(Writer w = new FileWriter(userFPath)) {
-                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                gsonWriter.toJson(userList, w);
-                successfulRegister = true;
+            try {
+            	Gson gson = new Gson();
+            	pathHolder.writeFile("user", gson.toJson(userList));
                 
                 data.addProperty("success", successfulRegister);
                 data.addProperty("UserName", username);
@@ -111,7 +110,7 @@ public class RegisterServices{
                 responseObject.add("data", data);
                 stringifiedResponse = responseObject.toString();
             }
-            catch(IOException e){
+            catch(Exception e){
                 e.printStackTrace();
                 successfulRegister = false;
                 data.addProperty("success", successfulRegister);
