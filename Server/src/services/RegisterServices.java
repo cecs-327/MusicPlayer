@@ -24,11 +24,9 @@ public class RegisterServices{
 		JsonParser parser = new JsonParser();
 		try {
 			String users = pathHolder.readFile("user");
-			System.out.println("This is a string user: " + users);
 			JsonArray userFile = parser.parse(users).getAsJsonArray();
 			for(int i = 0; i < userFile.size(); i++) {
 				Users temp = new Users(userFile.get(i).getAsJsonObject().get("UserName").getAsString(), userFile.get(i).getAsJsonObject().get("Password").getAsString());
-				System.out.println(temp.getUsername() + " " + temp.getPassword());
 				userList.add(temp);
 			}            
             return userList;
@@ -43,11 +41,9 @@ public class RegisterServices{
         JsonParser parser = new JsonParser();
         try{
             String UserPlaylists = pathHolder.readFile("playlist");
-            System.out.println("This is a string user playlists: " + UserPlaylists);
             JsonArray playlistsFile = parser.parse(UserPlaylists).getAsJsonArray();
             for(int i = 0; i < playlistsFile.size(); i++){
                 UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
-                System.out.println("User: " + temp.getUserName());
                 userPlaylistList.add(temp);
             }
             return userPlaylistList;
@@ -81,9 +77,6 @@ public class RegisterServices{
     public String registerUser(String username, String password){
         boolean successfulRegister = false;
         List<Users> userList = getUsers();
-        for(int i = 0; i < userList.size(); i++) {
-        	System.out.print(userList.get(i) + " ");
-        }
         boolean isUnique = isUniqueUser(userList, username);
         
         JsonObject responseObject = new JsonObject();
@@ -103,7 +96,7 @@ public class RegisterServices{
             try {
             	Gson gson = new Gson();
             	pathHolder.writeFile("user", gson.toJson(userList));
-                
+            	successfulRegister = true;
                 data.addProperty("success", successfulRegister);
                 data.addProperty("UserName", username);
                 data.addProperty("Password", password);

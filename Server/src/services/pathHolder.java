@@ -30,23 +30,19 @@ public class pathHolder {
 	  int numOfPages = 0;
 	  RemoteInputFileStream rfs;
 	  
-	  System.out.println("Files Json size:" + filesJson.getSize());
 	  for(int i = 0; i < filesJson.getSize(); i++){
           if(filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)){
-        	  System.out.println("Found file name");
               numOfPages = filesJson.getFileJson(i).getNumOfPages();
           }
       }
 	  
 	  for(int pageNum = 1; pageNum <= numOfPages; pageNum++)
 	  {
-		  System.out.println("Going through pages");
 		  rfs = dfs.read(fileName, pageNum);
           rfs.connect();
           int i;
           while((i = rfs.read()) != -1){
               fileInfo += ((char) i);
-              System.out.println(fileInfo);
           }
 	  }
 	  return fileInfo;
