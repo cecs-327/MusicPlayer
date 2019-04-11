@@ -46,8 +46,7 @@ public class Main {
 
         // Main player = new Main();
         // player.mp3play(490183L, proxy);
-    	pathHolder.dfs = new DFS(pathHolder.portNum);
-		pathHolder.dfs.join("127.0.0.1", pathHolder.portToJoin);
+    	pathHolder.initalizeDFS();
         SocketLayer sl = new SocketLayer();
         sl.run();
         
