@@ -3,7 +3,7 @@ import services.RegisterServices;
 
 public class RegisterServicesTest{
 
-public static void main(String[] args) {
+public static void main(String[] args) throws Exception {
     RegisterServices rs = new RegisterServices();
 
     //Test case 1

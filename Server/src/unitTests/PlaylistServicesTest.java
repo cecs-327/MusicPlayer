@@ -1,4 +1,5 @@
 package unitTests;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import gson.Playlists;
@@ -8,7 +9,7 @@ import services.PlaylistServices;
 
 public class PlaylistServicesTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         PlaylistServices ps = new PlaylistServices();
         
         //Ensuring Proper Output
