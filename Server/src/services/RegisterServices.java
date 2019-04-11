@@ -40,16 +40,23 @@ public class RegisterServices{
 	
     public List<UserPlaylists> getUserPlaylists(){
         List<UserPlaylists> userPlaylistList = new ArrayList<UserPlaylists>();
+        JsonParser parser = new JsonParser();
         try{
-            BufferedReader bufReader = new BufferedReader(new FileReader(playlistPath));
-            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
-            userPlaylistList = new Gson().fromJson(bufReader, jsonListType);
+            String UserPlaylists = pathHolder.readFile("playlist");
+            System.out.println("This is a string user playlists: " + UserPlaylists);
+            JsonArray playlistsFile = parser.parse(UserPlaylists).getAsJsonArray();
+            for(int i = 0; i < playlistsFile.size(); i++){
+                UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
+                System.out.println("User: " + temp.getUserName());
+                userPlaylistList.add(temp);
+            }
             return userPlaylistList;
-        }catch(FileNotFoundException e){
+        }catch(Exception e){
             e.printStackTrace();
             return userPlaylistList;
         }
     }
+
     public boolean isUniqueUser(List<Users> userList, String username){
         boolean isUnique = true;
         for(int i = 0; i < userList.size(); i++){
