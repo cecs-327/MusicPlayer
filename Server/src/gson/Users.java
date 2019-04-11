@@ -16,4 +16,12 @@ public class Users{
     public String getPassword(){
         return Password;
     }
+    
+    public void setUsername(String u) {
+    	this.UserName = u;
+    }
+    
+    public void setPassword(String p) {
+    	this.Password = p;
+    }
 }

@@ -3,7 +3,9 @@ package services;
 import java.io.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import gson.UserPlaylists;
@@ -17,19 +19,25 @@ public class RegisterServices{
 	private String userFPath = pathHolder.testUsers;
 	private String playlistPath = pathHolder.testPlaylists;
 	
-    public List<Users> getUsers(){
-        List<Users> userList = new ArrayList<Users>();
-        try{
-            BufferedReader bufReader = new BufferedReader(new FileReader(userFPath));
-            Type jsonListType = new TypeToken<ArrayList<Users>>() {}.getType();
-            userList = new Gson().fromJson(bufReader, jsonListType);
+	public static List<Users> getUsers() {
+		List<Users> userList = new ArrayList<Users>();
+		JsonParser parser = new JsonParser();
+		try {
+			String users = pathHolder.readFile("user");
+			System.out.println("This is a string user: " + users);
+			JsonArray userFile = parser.parse(users).getAsJsonArray();
+			for(int i = 0; i < userFile.size(); i++) {
+				Users temp = new Users(userFile.get(i).getAsJsonObject().get("UserName").getAsString(), userFile.get(i).getAsJsonObject().get("Password").getAsString());
+				System.out.println(temp.getUsername() + " " + temp.getPassword());
+				userList.add(temp);
+			}            
             return userList;
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-            return userList;
+		}catch(Exception e) {
+			System.out.println(e);
+			return userList;
         }
-        
-    }
+	}
+	
     public List<UserPlaylists> getUserPlaylists(){
         List<UserPlaylists> userPlaylistList = new ArrayList<UserPlaylists>();
         try{

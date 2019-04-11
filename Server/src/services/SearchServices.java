@@ -122,7 +122,6 @@ public class SearchServices {
     //return List<Songs>
     public void getSongs() {
     	JsonParser parser = new JsonParser();
-    	JsonArray jsonArray = new JsonArray();
     	try {
     		String jsonfile = pathHolder.readFile("songs");
     		System.out.print(jsonfile.substring(0, 200));
