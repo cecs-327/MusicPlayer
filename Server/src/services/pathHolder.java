@@ -1,5 +1,8 @@
 package services;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -48,6 +51,19 @@ public class pathHolder {
 	  }
 	  return fileInfo;
   }
+  
+  public static void writeFile(String fileName, String fileInfo) throws Exception 
+  {
+	  dfs.delete(fileName);
+	  dfs.create(fileName);
+	  File tempFile = File.createTempFile("tempfile", ".json");
+	  BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile.getAbsolutePath()));
+	  writer.write(fileInfo);
+	  writer.close();
+	  RemoteInputFileStream input = new RemoteInputFileStream(tempFile.getAbsolutePath());
+	  dfs.append(fileName, input);
+	  tempFile.deleteOnExit();
+  }
 	 
   public static void main(String[] args) throws Exception
   {
@@ -56,6 +72,6 @@ public class pathHolder {
 	  Scanner scan = new Scanner(System.in);
 	  String response = scan.next();
 	  if(response.equals("read"))
-		  System.out.println("Result: " + readFile("playlist"));
+		  writeFile("playlist", "[user1: {playlistTitle: []}]");
   }
 }
