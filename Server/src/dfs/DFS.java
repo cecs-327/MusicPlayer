@@ -329,7 +329,6 @@ public class DFS
             Scanner scan = new Scanner(metadataraw);
             scan.useDelimiter("\\A");
             String strMetaData = scan.next();
-            System.out.println(strMetaData);
             filesJson= gson.fromJson(strMetaData, FilesJson.class);
         } catch (NoSuchElementException ex)
         {
@@ -474,7 +473,7 @@ public class DFS
                         pageToRead.setReadTS(timeOfRead);
                         filesJson.getFileJson(i).setReadTS(timeOfRead);
                         Long pageGUID = md5(fileName + pageToRead.getCreationTS());
-                        System.out.println("Read pageGUID: " + pageGUID);
+                        //System.out.println("Read pageGUID: " + pageGUID);
                         ChordMessageInterface peer = chord.locateSuccessor(pageGUID);
                         rifs = peer.get(pageGUID);
                     }
