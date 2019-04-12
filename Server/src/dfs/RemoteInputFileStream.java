@@ -1,13 +1,15 @@
+package dfs;
+
 /**
 * RemoteInputFileStream Implements an Input Stream for big
 * files. It creates a server and return the address
 * The client must call connect() before reading
 *
 * @author  Oscar Morales-Ponce
-* @version 0.15
+* @version 0.16
 * @since   03-3-2019
 */
-package dfs;
+
 import java.io.*;
 import java.nio.*;
 import java.net.*;
@@ -22,8 +24,7 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
     public int pos;
     public InputStream input;
     public Semaphore sem;
-    private static int BUFFER_LENGTH = 2 << 15;//this is 65536 bytes = 2^16
-    
+    private static int BUFFER_LENGTH = 1<< 16;
     /**
      * It stores a buffer with FRAGMENT_SIZE bytes for the current reading.
      * This variable is useful for UDP sockets. Thus bur is the datagram
@@ -44,7 +45,7 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
  */
     public void connect()
     {
-        this.buf  = new byte[BUFFER_LENGTH];
+        //this.buf  = new byte[BUFFER_LENGTH];
         this.nextBuf  = new byte[BUFFER_LENGTH];
         pos = 0;
         try
@@ -54,7 +55,6 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
             sem = new Semaphore(1);
             sem.acquire();
             getBuff(fragment);
-            
             fragment++;
         } catch (Exception exc) {
             System.out.println(exc);
@@ -71,8 +71,7 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
 /**
  * Starts a server to provide the file
  */
-    public  RemoteInputFileStream(String pathName, boolean deleteAfter) throws FileNotFoundException, IOException    
-    {
+    public  RemoteInputFileStream(String pathName, boolean deleteAfter) throws FileNotFoundException, IOException    {
         File file = new File(pathName);
         total = (int)file.length();
         pos = 0;
@@ -89,11 +88,13 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
                         Socket socket = serverSocket.accept();
                         OutputStream socketOutputStream = socket.getOutputStream();
                         FileInputStream is = new FileInputStream(pathName);
+                        byte[] b =new byte[BUFFER_LENGTH];
                         while (is.available() > 0)
-                            socketOutputStream.write(is.read());
+                        {
+                            is.read(b);
+                            socketOutputStream.write(b);
+                        }
                         is.close();
-                        
-              
                         if (deleteAfter)
                         {
                           file.delete();
@@ -119,26 +120,22 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
     */
     protected void getBuff(int fragment) throws IOException
     {
-    	/*
-    	 * why pass in the fragment if its not going to be used
-    	 */
         new Thread()
         {
- 
             public void run() {
                 try
                 {
-                	/*
-                	 * In case the file is really big
-                	 * and our buffer is not reading the 
-                	 * entire we will probably need to increase
-                	 * the sleep time. 
-                	 */
-                	Thread.sleep(1000);
+                         
+                    while ((Math.floor(total/BUFFER_LENGTH) <= fragment || 
+                            input.available() < BUFFER_LENGTH) && 
+                          (Math.floor(total/BUFFER_LENGTH) > fragment || 
+                           (input.available() < total % BUFFER_LENGTH))) 
+                    {
+            
+                        Thread.sleep(1);
+                     }
                     input.read(nextBuf);
-                
                     sem.release();
-                  
                 }
                 catch (Exception e)
                 {
@@ -157,25 +154,13 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
     @Override
     public synchronized int read() throws IOException {
 
-     
-      /*
-       * when this condition is true we will have 
-       * read all the data
-      */
+
 	  if (pos >= total)
 	  {
             pos = 0;
             return -1;
 	  }
 	  int posmod = pos % BUFFER_LENGTH;
-	  /*
-	   * This is condition is true for two cases
-	   * case 1 we are reading the very first time 
-	   * read is called pos initial value will be zero
-	   * case 2 pos has incremented to 65536, this 
-	   * will happen if the total size of our
-	   * file is more than the size of our buffer(65536 bytes)
-	   */
 	  if (posmod == 0)
 	  {
           try
@@ -185,15 +170,13 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
           {
                 System.out.println(exc);
           }
-	      for (int i=0; i< BUFFER_LENGTH; i++)
-		      buf[i] = nextBuf[i];
+		  buf = nextBuf.clone();
 
 	      getBuff(fragment);
 	      fragment++;
 	  }
 	  int p = pos % BUFFER_LENGTH;
 	  pos++;
-	  
       return buf[p] & 0xff;
     }
 
