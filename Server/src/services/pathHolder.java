@@ -1,16 +1,17 @@
 package services;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Scanner;
 
+import java.io.*;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
+import gson.*;
 import dfs.*;
-import dfs.DFS.FileJson;
-import dfs.DFS.PagesJson;
-import dfs.DFS.*;
+import dfs.DFS.FilesJson;
 
 public class pathHolder {
 
@@ -19,7 +20,7 @@ public class pathHolder {
 	public static String testPlaylists = userDir + "/src/testplaylists.json";
 	public static String mp3Directory = userDir + "/src/mp3/";
 	public static String dataDirectory = userDir + "/src/data/";
-	public static String songPath = userDir + "/src/data/musicAlmostComplete.json";
+	public static String songPath = userDir + "/src/data/musicComplete.json";
 	public static DFS dfs;
 	public static int portNum = 12345;
 	public static int portToJoin = 1234;
@@ -29,15 +30,10 @@ public class pathHolder {
 
   public static String readFile(String fileName) throws Exception {
 	  FilesJson filesJson = dfs.readMetaData();
-	  String fileInfo = "";
-	  int numOfPages = 0;
+	  StringBuilder fileInfo = new StringBuilder();
+	  int numOfPages = getNumberOfPages(fileName);
 	  RemoteInputFileStream rfs;
-	  
-	  for(int i = 0; i < filesJson.getSize(); i++){
-          if(filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)){
-              numOfPages = filesJson.getFileJson(i).getNumOfPages();
-          }
-      }
+	  Gson gson = new Gson();
 	  
 	  for(int pageNum = 1; pageNum <= numOfPages; pageNum++)
 	  {
@@ -45,14 +41,24 @@ public class pathHolder {
           rfs.connect();
           int i;
           while((i = rfs.read()) != -1){
-              fileInfo += ((char) i);
+        	  fileInfo.append((char) i);
           }
 	  }
-	  return fileInfo;
+	  return fileInfo.toString();
   }
   
-  public static void initalizeDFS() throws Exception
+  public static RemoteInputFileStream getInputStream(String fileName, int pageNum) throws Exception{
+	  FilesJson filesJson = dfs.readMetaData();
+	  int numOfPages = getNumberOfPages(fileName);
+	  
+	  if(pageNum >= numOfPages)
+		  return null;
+	  return dfs.read(fileName, pageNum);
+  }
+  
+  public static void initalizeFreshDFS() throws Exception
   {
+//	  dfs = new DFS(portToJoin);
 	  dfs = new DFS(portNum);
 	  dfs.join("127.0.0.1", portToJoin);
 	  dfs.create(userFile);
@@ -60,10 +66,27 @@ public class pathHolder {
 	  dfs.create(songFile);
 	  RemoteInputFileStream input = new RemoteInputFileStream(testUsers);
 	  dfs.append(userFile, input);
-	  input = new RemoteInputFileStream(testPlaylists);
-	  dfs.append(playlistFile, input);
-	  input = new RemoteInputFileStream(songPath);
-	  dfs.append(songFile, input);
+	  RemoteInputFileStream input2 = new RemoteInputFileStream(testPlaylists);
+	  dfs.append(playlistFile, input2);
+	  RemoteInputFileStream input3 = new RemoteInputFileStream(songPath);
+	  dfs.append(songFile, input3);
+  }
+  
+  public static void initalizeDFS() throws Exception
+  {
+	  dfs = new DFS(portNum);
+	  dfs.join("127.0.0.1", portToJoin);
+  }
+  
+  public static int getNumberOfPages(String fileName) throws Exception {
+	  FilesJson filesJson = dfs.readMetaData();
+	  int numOfPages = 0;
+	  for(int i = 0; i < filesJson.getSize(); i++){
+          if(filesJson.getFileJson(i).getName().equalsIgnoreCase(fileName)){
+              numOfPages = filesJson.getFileJson(i).getNumOfPages();
+          }
+      }
+	  return numOfPages;
   }
   
   public static void writeFile(String fileName, String fileInfo) throws Exception 
@@ -81,11 +104,17 @@ public class pathHolder {
 	 
   public static void main(String[] args) throws Exception
   {
-	  dfs = new DFS(pathHolder.portNum);
-	  dfs.join("127.0.0.1", pathHolder.portToJoin);
+	  System.out.println("Starting initalization");
+	  initalizeDFS();
+	  System.out.println("Initalization Finished");
 	  Scanner scan = new Scanner(System.in);
 	  String response = scan.next();
-	  if(response.equals("read"))
-		  writeFile("playlist", "[user1: {playlistTitle: []}]");
+	  
+	  
+	  if(response.equals("cont")) {
+		  System.out.println(readFile(songFile));
+		  
+	  }
+	  scan.close();
   }
 }

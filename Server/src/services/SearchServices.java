@@ -124,9 +124,9 @@ public class SearchServices {
     	JsonParser parser = new JsonParser();
     	try {
     		String jsonfile = pathHolder.readFile(pathHolder.songFile);
-    		System.out.print(jsonfile.substring(0, 200));
+    		System.out.print("\nLast part of JsonFile:\n" + jsonfile.substring(jsonfile.length() - 200, jsonfile.length()));
             musicFile = parser.parse(jsonfile).getAsJsonArray();
-
+            System.out.println("Successful print");
         } catch (Exception e)
         {
             System.out.println(e);

@@ -125,10 +125,10 @@ public class RemoteInputFileStream extends InputStream implements Serializable {
             public void run() {
                 try
                 {
-                         
-                    while ((Math.floor(total/BUFFER_LENGTH) <= fragment || 
+                    double numberOfFragments = Math.floor(total/BUFFER_LENGTH);
+                    while ((numberOfFragments <= fragment || 
                             input.available() < BUFFER_LENGTH) && 
-                          (Math.floor(total/BUFFER_LENGTH) > fragment || 
+                          (numberOfFragments > fragment || 
                            (input.available() < total % BUFFER_LENGTH))) 
                     {
             
