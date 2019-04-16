@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -45,16 +46,21 @@ public class PlaylistServices{
     //Internal
     public ArrayList<UserPlaylists> getUserPlaylistsArrayList(){
         ArrayList<UserPlaylists> userPlaylistList = new ArrayList<UserPlaylists>();
+        JsonParser parser = new JsonParser();
         try{
-            BufferedReader bufReader = new BufferedReader(new FileReader(playlistPath));
-            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
-
-            userPlaylistList = new Gson().fromJson(bufReader, jsonListType);
+            String userPlaylists = pathHolder.readFile(pathHolder.playlistFile);
+            JsonArray playlistsFile = parser.parse(userPlaylists).getAsJsonArray();
+            for(int i = 0; i < playlistsFile.size(); i++) {
+            	UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
+            	userPlaylistList.add(temp);
+            }
             return userPlaylistList;
-        }catch(FileNotFoundException e){
+        }catch(Exception e){
             e.printStackTrace();
             return userPlaylistList;
         }
+       
+        
     }
 
     //Internal
@@ -63,17 +69,14 @@ public class PlaylistServices{
         ArrayList<UserPlaylists> userPlaylistList = new ArrayList<UserPlaylists>();
         
         try{
-            BufferedReader bufReader = new BufferedReader(new FileReader(playlistPath));
-            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
-
-            userPlaylistList = new Gson().fromJson(bufReader, jsonListType);
+            userPlaylistList = getUserPlaylistsArrayList();
             for (UserPlaylists up : userPlaylistList) {
                 if(up.getUserName().equalsIgnoreCase(userName)){
                     usersPlaylists = up;
                 }
             }
             return usersPlaylists;
-        }catch(FileNotFoundException e){
+        }catch(Exception e){
             e.printStackTrace();
             return usersPlaylists;
         }
@@ -178,10 +181,7 @@ public class PlaylistServices{
         boolean success = false;
         
         try{
-            BufferedReader bufReader = new BufferedReader(new FileReader(playlistPath));
-            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
-
-            userPlaylistList = new Gson().fromJson(bufReader, jsonListType);
+            userPlaylistList = getUserPlaylistsArrayList();
             for (UserPlaylists up : userPlaylistList) {
                 if(up.getUserName().equalsIgnoreCase(userName)){
                     usersPlaylists = up;
@@ -198,7 +198,7 @@ public class PlaylistServices{
             responseObject.add("data", data);
             stringifiedResponse = responseObject.toString();
             return stringifiedResponse;
-        }catch(FileNotFoundException e){
+        }catch(Exception e){
             e.printStackTrace();
             success = false;
             data.addProperty("success", success);
