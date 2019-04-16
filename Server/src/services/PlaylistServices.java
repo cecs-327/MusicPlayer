@@ -50,6 +50,7 @@ public class PlaylistServices{
         try{
             String userPlaylists = pathHolder.readFile(pathHolder.playlistFile);
             JsonArray playlistsFile = parser.parse(userPlaylists).getAsJsonArray();
+            System.out.println(playlistsFile);
             for(int i = 0; i < playlistsFile.size(); i++) {
             	UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
             	userPlaylistList.add(temp);
@@ -137,24 +138,35 @@ public class PlaylistServices{
                         userPlaylistArrList.set(i, usersPlaylists);
                     }
                 }
-                try(Writer w = new FileWriter(playlistPath)) {
-                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                    gsonWriter.toJson(userPlaylistArrList, w);
-                    isSuccessfulDeletion = true;
-                    
-                    data.addProperty("success", isSuccessfulDeletion);
-                    data.addProperty("UserName", userName);
-                    data.addProperty("DeletedPlaylist", removedPlaylist.getPlaylistTitle());
-                    responseObject.add("data", data);
-                    stringifiedResponse = responseObject.toString();
-                }
-                catch(IOException e){
-                    e.printStackTrace();
-                    isSuccessfulDeletion = false;
-                    data.addProperty("success", isSuccessfulDeletion);
-                    responseObject.add("data", data);
-                    stringifiedResponse = responseObject.toString();
-                }
+//                try(Writer w = new FileWriter(playlistPath)) {
+//                    Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+//                    gsonWriter.toJson(userPlaylistArrList, w);
+//                    isSuccessfulDeletion = true;
+//                    
+//                    data.addProperty("success", isSuccessfulDeletion);
+//                    data.addProperty("UserName", userName);
+//                    data.addProperty("DeletedPlaylist", removedPlaylist.getPlaylistTitle());
+//                    responseObject.add("data", data);
+//                    stringifiedResponse = responseObject.toString();
+//                }
+//                catch(IOException e){
+//                    e.printStackTrace();
+//                    isSuccessfulDeletion = false;
+//                    data.addProperty("success", isSuccessfulDeletion);
+//                    responseObject.add("data", data);
+//                    stringifiedResponse = responseObject.toString();
+//                }
+              Gson gson = new Gson();
+              try {
+				  pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
+			  } catch (Exception e) {
+				  e.printStackTrace();
+			  }
+              data.addProperty("success", isSuccessfulDeletion);
+              data.addProperty("UserName", userName);
+              data.addProperty("DeletedPlaylist", removedPlaylist.getPlaylistTitle());
+              responseObject.add("data", data);
+              stringifiedResponse = responseObject.toString();
 
             }
             else{
@@ -224,34 +236,57 @@ public class PlaylistServices{
             if(p.getPlaylistTitle().equalsIgnoreCase(affectedPlaylist.getPlaylistTitle())){
                 currentPlaylist = p;
                 currentPlaylist.getPlaylistsSongs().add(song);
-                try(Writer w = new FileWriter(playlistPath)) {
                 ArrayList<UserPlaylists> userPlaylistArrList = getUserPlaylistsArrayList();
-                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
                 
-                gsonWriter.toJson(userPlaylistArrList, w);
-                isSuccessfulAddition = true;
+//                try(Writer w = new FileWriter(playlistPath)) {
+//                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+//                gsonWriter.toJson(userPlaylistArrList, w);
+//                isSuccessfulAddition = true;
+//                
+//                JsonObject songData = new JsonObject();
+//                songData.addProperty("SongTitle", song.getSongTitle());
+//                songData.addProperty("SongArtist", song.getSongArtist());
+//                songData.addProperty("MusicFile", song.getMusicFile());
+//
+//                data.addProperty("success", isSuccessfulAddition);
+//                data.addProperty("UserName", userName);
+//                data.addProperty("Playlist", affectedPlaylist.getPlaylistTitle());
+//                data.add("Song", songData);
+//                responseObject.add("data", data);
+//                stringifiedResponse = responseObject.toString();
+//                
+//                }
+//                catch(IOException e){
+//                    e.printStackTrace();
+//                    isSuccessfulAddition = false;
+//                    
+//                    data.addProperty("success", isSuccessfulAddition);
+//                    responseObject.add("data", data);
+//                    stringifiedResponse = responseObject.toString();
+//                }
                 
-                JsonObject songData = new JsonObject();
-                songData.addProperty("SongTitle", song.getSongTitle());
-                songData.addProperty("SongArtist", song.getSongArtist());
-                songData.addProperty("MusicFile", song.getMusicFile());
-
-                data.addProperty("success", isSuccessfulAddition);
-                data.addProperty("UserName", userName);
-                data.addProperty("Playlist", affectedPlaylist.getPlaylistTitle());
-                data.add("Song", songData);
-                responseObject.add("data", data);
-                stringifiedResponse = responseObject.toString();
                 
-                }
-                catch(IOException e){
-                    e.printStackTrace();
-                    isSuccessfulAddition = false;
-                    
-                    data.addProperty("success", isSuccessfulAddition);
-                    responseObject.add("data", data);
-                    stringifiedResponse = responseObject.toString();
-                }
+                Gson gson = new Gson();
+                try {
+  				  pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
+  				  
+  				  isSuccessfulAddition = true;
+	              JsonObject songData = new JsonObject();
+	              songData.addProperty("SongTitle", song.getSongTitle());
+	              songData.addProperty("SongArtist", song.getSongArtist());
+	              songData.addProperty("MusicFile", song.getMusicFile());
+	
+	              data.addProperty("success", isSuccessfulAddition);
+	              data.addProperty("UserName", userName);
+	              data.addProperty("Playlist", affectedPlaylist.getPlaylistTitle());
+	              data.add("Song", songData);
+	              responseObject.add("data", data);
+	              stringifiedResponse = responseObject.toString();
+  			    } catch (Exception e) {
+  				  e.printStackTrace();
+  			    }
+                
+                
             }
         }
         if(isSuccessfulAddition == false){
@@ -367,10 +402,11 @@ public class PlaylistServices{
             }
         }
         if(isSuccessfulCreation == true){
-            
-            try(Writer w = new FileWriter(playlistPath)) {
-                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
-                gsonWriter.toJson(userPlaylistArrList, w);
+        	Gson gson = new Gson();
+            try {
+//                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
+//                gsonWriter.toJson(userPlaylistArrList, w);
+                pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
                 
                 JsonArray songsArray = new JsonArray();
                 for(Songs s : songsToAdd){
@@ -400,7 +436,10 @@ public class PlaylistServices{
                 data.addProperty("success", isSuccessfulCreation);
                 responseObject.add("data", data);
                 stringifiedResponse = responseObject.toString();
-            }
+            } catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         
         }
         songsToAdd = new ArrayList<Songs>();

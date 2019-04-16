@@ -46,7 +46,7 @@ public class Main {
 
         // Main player = new Main();
         // player.mp3play(490183L, proxy);
-    	pathHolder.initalizeFreshDFS();
+    	pathHolder.initalizeDFS();
         SocketLayer sl = new SocketLayer();
         sl.run();
         
