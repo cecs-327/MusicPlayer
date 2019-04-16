@@ -24,9 +24,9 @@ public class UserPlaylists {
         
         String fPath = pathHolder.testPlaylists;
         try {
-            BufferedReader bufReader = new BufferedReader(new FileReader(fPath));
-            Type jsonListType = new TypeToken<List<UserPlaylists>>() {}.getType();
-            UserPlaylist = new Gson().fromJson(bufReader, jsonListType);
+        	String userPlaylists = pathHolder.readFile(pathHolder.playlistFile);
+            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
+            UserPlaylist = new Gson().fromJson(userPlaylists, jsonListType);
 
             for(int i = 0; i < UserPlaylist.size(); i++) {
                 if(UserPlaylist.get(i).getUserName() == UserName) {
@@ -35,7 +35,10 @@ public class UserPlaylists {
             }
         }catch(FileNotFoundException e) {
             System.out.println(e);
-        }
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public String getUserName(){

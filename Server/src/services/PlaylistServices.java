@@ -49,12 +49,9 @@ public class PlaylistServices{
         JsonParser parser = new JsonParser();
         try{
             String userPlaylists = pathHolder.readFile(pathHolder.playlistFile);
-            JsonArray playlistsFile = parser.parse(userPlaylists).getAsJsonArray();
-            System.out.println(playlistsFile);
-            for(int i = 0; i < playlistsFile.size(); i++) {
-            	UserPlaylists temp = new UserPlaylists(playlistsFile.get(i).getAsJsonObject().get("UserName").getAsString());
-            	userPlaylistList.add(temp);
-            }
+            Type jsonListType = new TypeToken<ArrayList<UserPlaylists>>() {}.getType();
+            userPlaylistList = new Gson().fromJson(userPlaylists, jsonListType);
+                        
             return userPlaylistList;
         }catch(Exception e){
             e.printStackTrace();
@@ -158,10 +155,11 @@ public class PlaylistServices{
 //                }
               Gson gson = new Gson();
               try {
-				  pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
+				  pathHolder.writeFile(pathHolder.playlistFile,gson.toJson(userPlaylistArrList));
 			  } catch (Exception e) {
 				  e.printStackTrace();
 			  }
+              isSuccessfulDeletion = true;
               data.addProperty("success", isSuccessfulDeletion);
               data.addProperty("UserName", userName);
               data.addProperty("DeletedPlaylist", removedPlaylist.getPlaylistTitle());
@@ -268,7 +266,7 @@ public class PlaylistServices{
                 
                 Gson gson = new Gson();
                 try {
-  				  pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
+  				  pathHolder.writeFile(pathHolder.playlistFile,gson.toJson(userPlaylistArrList));
   				  
   				  isSuccessfulAddition = true;
 	              JsonObject songData = new JsonObject();
@@ -349,7 +347,7 @@ public class PlaylistServices{
             currentPlaylist = new Playlists(playlistTitle);
             currentPlaylist.setPlaylistsSongs(songsToAdd);
             usersListOfPlaylists.add(currentPlaylist);
-            songsToAdd = new ArrayList<Songs>();
+//            songsToAdd = new ArrayList<Songs>();
             usersPlaylists.setPlaylists(usersListOfPlaylists);
             for(int i = 0; i < userPlaylistArrList.size(); i++){
                 if(userPlaylistArrList.get(i).getUserName().equalsIgnoreCase(userName)){
@@ -363,7 +361,7 @@ public class PlaylistServices{
             for (Playlists p : usersListOfPlaylists) {
                 if(p.getPlaylistTitle().equalsIgnoreCase(playlistTitle)){
                     p.setPlaylistsSongs(songsToAdd);
-                    songsToAdd = new ArrayList<Songs>();
+//                    songsToAdd = new ArrayList<Songs>();
                     usersPlaylists.setPlaylists(usersListOfPlaylists);
                     for(int i = 0; i < userPlaylistArrList.size(); i++){
                         if(userPlaylistArrList.get(i).getUserName().equalsIgnoreCase(userName)){
@@ -406,7 +404,7 @@ public class PlaylistServices{
             try {
 //                Gson gsonWriter = new GsonBuilder().setPrettyPrinting().create();
 //                gsonWriter.toJson(userPlaylistArrList, w);
-                pathHolder.writeFile(pathHolder.testPlaylists,gson.toJson(userPlaylistArrList));
+                pathHolder.writeFile(pathHolder.playlistFile,gson.toJson(userPlaylistArrList));
                 
                 JsonArray songsArray = new JsonArray();
                 for(Songs s : songsToAdd){
