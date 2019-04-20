@@ -539,6 +539,7 @@ public class DFS {
     bulkTree(fileOutput + ".map");
     createFile(fileOutput, interval, size);
 //    for each page in fileOutput + ".map"{
+    for (int i = 0; i < filesJson.getSize(); i++) {
 	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
 		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
 		PagesJson page = pages.get(i);
@@ -547,6 +548,7 @@ public class DFS {
 		
     	//need to complete reduceContext function to figure out what mapreducer parameter is
     	peer.reduceContext(page.guid, mapreducer, this, fileOutput);
+    }
     }
     }
     	wait until pages[fileInput] == 0;
