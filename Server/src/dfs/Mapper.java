@@ -15,9 +15,8 @@ public void map(String key, JsonObject value, DFS context, String file) throws I
 	// The new values can have the items of interest
 	// Song title, year of release, duration, artist and album
 	
-	Object newKey;
-	Object newValue;
-	context.emit(newKey, newValue, file);	
+	String newValue;
+	context.emit(key,value,file);	
 }
 @Override
 public void reduce(String key, JsonObject values, DFS context, String file) throws IOException {

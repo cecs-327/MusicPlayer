@@ -8,6 +8,7 @@ import java.nio.file.*;
 import java.math.BigInteger;
 import java.security.*;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -504,6 +505,17 @@ public class DFS {
 		}
 		writeMetaData(filesJson);
 
+	}
+	public void emit(String key, JsonObject value, String file) {
+		 for (int i = 0; i < filesJson.getSize(); i++) {
+   			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(file)) {
+   				ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages();
+   				
+   				//iterate through pages of fileinput 
+   				for (int j = 0; j < inputList.size(); j++) {
+   				
+   				}
+   				
 	}
 	int fileInputCounter =0;
 	public void runMapReduce(String fileInput, String fileOutput) {
