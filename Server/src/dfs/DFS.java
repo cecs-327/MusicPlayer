@@ -531,13 +531,13 @@ public class DFS {
       				//iterate through pages of fileinput 
       				for (int j = 0; j < inputList.size(); j++) {
       					
-      					long pageGuid = inputList.get(j).getGuid();
+      					PagesJson page = inputList.get(j);
 
       					fileInputCounter++;
       			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid);
       			    	
       			    	//need to complete mapContext function to figure out what mapreducer parameter is
-      			    	peer.mapContext(pageGuid, mapreducer, this, fileOutput + ".map");
+      			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
       				}
       	
   		
@@ -560,12 +560,14 @@ public class DFS {
 		    for (int i = 0; i < filesJson.getSize(); i++) {
 		    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
 		    		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-		    		PagesJson page = pages.get(i);
-		       		fileInputCounter++;
-		    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-		    		//need to complete reduceContext function to figure out what mapreducer parameter is
-		    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
-		    }
+		    		for(int b =0; b <pages.size();b++) {
+			    		PagesJson page = pages.get(b);
+			       		fileInputCounter++;
+			    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+			    		//need to complete reduceContext function to figure out what mapreducer parameter is
+			    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
+		    		}
+		    		}
 		    }
 		    }
         };
@@ -576,7 +578,6 @@ public class DFS {
     }
 }
 
-//empty file that pages
 	private void createFile(String fileOutput, int interval, int size) { // Helper function
 		int lower = 0;
 		create(fileOutput);
@@ -594,7 +595,6 @@ public class DFS {
 		int size = 0;
 		// only using output file and all the pages of that
 		// read fileoutput and check how many pages in it
-		FileJson f = null;
 		for (int i = 0; i < filesJson.getSize(); i++) {
 			{
 				if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
