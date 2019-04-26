@@ -505,7 +505,7 @@ public class DFS {
 		writeMetaData(filesJson);
 
 	}
-
+	int fileInputCounter =0;
 	public void runMapReduce(String fileInput, String fileOutput) {
     int size = 0; // If the remote methods are in Chord, then size is a
     // variable of Chord
@@ -514,55 +514,77 @@ public class DFS {
 	//need to complete onChordSize so we can determine what guid parameter
 	
     chord.successor.onChordSize(guid, 1); // Obtain the number of nodes
-    wait until size > 0; // Obtained from onNetworkSize after a full cycle
-    int interval = 1936 / size; // Assuming 38 characters A-Z, 0-9, _, +.
-    //1936 = 38*38
-    createFile(fileOutput + ".map", interval, size);
-    // mapreducer is an instance of the class that
-    // implements MapReduceInterface
-//    for each page in fileInput
-    for (int i = 0; i < filesJson.getSize(); i++) {
-		if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
-		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-		PagesJson page = pages.get(i);
-//    	pages[fileInput]= ++;
-    	ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-    	
-    	//need to complete mapContext function to figure out what mapreducer parameter is
-    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
-		
-		}
-		
-		
-    wait until pages[fileInput] == 0;
-    
-    bulkTree(fileOutput + ".map");
-    createFile(fileOutput, interval, size);
-//    for each page in fileOutput + ".map"{
-    for (int i = 0; i < filesJson.getSize(); i++) {
-	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
-		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-		PagesJson page = pages.get(i);
-//    	pages[fileInput]= ++;
-		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-		
-    	//need to complete reduceContext function to figure out what mapreducer parameter is
-    	peer.reduceContext(page.guid, mapreducer, this, fileOutput);
-    }
-    }
-    }
-    	wait until pages[fileInput] == 0;
-    bulkTree(fileOutput);
-	}
+    //while loop for size of network
+    while (filesJson.getSize() > 0)
+    {
+    	Thread.sleep(10);
+    	 int interval = 1936 / size; // Assuming 38 characters A-Z, 0-9, _, +.
+    	    //1936 = 38*38
+    	  createFile(fileOutput + ".map", interval, size);
+    	// mapreducer is an instance of the class that
+      	// implements MapReduceInterface
+      	//for each page in fileInput
+          for (int i = 0; i < filesJson.getSize(); i++) {
+      			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
+      				ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages();
+      				
+      				//iterate through pages of fileinput 
+      				for (int j = 0; j < inputList.size(); j++) {
+      					
+      					long pageGuid = inputList.get(j).getGuid();
 
+      					fileInputCounter++;
+      			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+      			    	
+      			    	//need to complete mapContext function to figure out what mapreducer parameter is
+      			    	peer.mapContext(pageGuid, mapreducer, this, fileOutput + ".map");
+      				}
+      	
+  		
+  		}
+    	// Obtained from onNetworkSize after a full cycle
+    }
+   
+    	
+		
+		//while page ==0 set timer/ sleep thread.sleep for 10 milliseconds
+    	//while counter ==0 then sleep
+    while (fileInputCounter == 0)
+    	{
+    	Thread.sleep(10);
+    	
+    
+    	bulkTree(fileOutput + ".map");
+    	createFile(fileOutput, interval, size);
+    	//    for each page in fileOutput + ".map"{
+		    for (int i = 0; i < filesJson.getSize(); i++) {
+		    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
+		    		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
+		    		PagesJson page = pages.get(i);
+		       		fileInputCounter++;
+		    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+		    		//need to complete reduceContext function to figure out what mapreducer parameter is
+		    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
+		    }
+		    }
+		    }
+        };
+    while(fileInputCounter == 0)
+    {
+        	Thread.sleep(10);
+        	bulkTree(fileOutput);
+    }
+}
+
+//empty file that pages
 	private void createFile(String fileOutput, int interval, int size) { // Helper function
 		int lower = 0;
 		create(fileOutput);
 		for (int i = 0; i <= size - 1; i++) {
 			long page = md5(fileOutput + i);
-			double lowerBoundInterval = (Math.floor(lower / 38)) +(lower % 38);
-			
-			//need to create appendEmptyPage??
+			double lowerBoundInterval = (Math.floor(lower / 38)) + (lower % 38);
+
+			// appendEmptyPage needs to be created
 			appendEmptyPage(fileOutput, page, lowerBoundInterval);
 			lower += interval;
 		}
@@ -570,19 +592,28 @@ public class DFS {
 
 	private void bulkTree(String fileOutput) throws Exception { // Helper function
 		int size = 0;
-		filesJson = readMetaData();
+		// only using output file and all the pages of that
+		// read fileoutput and check how many pages in it
+		FileJson f = null;
 		for (int i = 0; i < filesJson.getSize(); i++) {
 			{
 				if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
 					ArrayList<PagesJson> pagesList = filesJson.getFileJson(i).getPages();
-					PagesJson pagesRead = pagesList.get(i);
-					long pageGuid = pagesRead.getGuid();
-					long page = md5(fileOutput + i);
-					ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
-					peer.bulk(page);
-
+					// iterate through pages of fileOutput and bulk
+					for (int j = 0; j < pagesList.size(); j++) {
+						long pageGuid = pagesList.get(j).getGuid();
+						long page = md5(fileOutput + i);
+						ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
+						peer.bulk(page);
+					}
 				}
 			}
+
+
+		
+
 		}
 	}
 }
+	
+
