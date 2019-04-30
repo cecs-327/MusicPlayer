@@ -544,8 +544,9 @@ public class DFS {
 	      				}
 	      	
 	  		
-	  		}
+	      			}
 	    	// Obtained from onNetworkSize after a full cycle
+	          }
 	    }
 	   
 	    	
@@ -570,18 +571,20 @@ public class DFS {
 					    		//need to complete reduceContext function to figure out what mapreducer parameter is
 					    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
 				    		}
-				    		}
+				    	}
 				    }
-				    }
-	    };
+	    }
+	    
 	    while(fileInputCounter == 0)
 	    {
 	        	Thread.sleep(10);
 	        	bulkTree(fileOutput);
 	    }
+	    
 	}
 
 	private void createFile(String fileOutput, int interval, int size) { // Helper function
+		
 		int lower = 0;
 		create(fileOutput);
 		for (int i = 0; i <= size - 1; i++) {
@@ -592,6 +595,7 @@ public class DFS {
 			appendEmptyPage(fileOutput, page, lowerBoundInterval);
 			lower += interval;
 		}
+		
 	}
 
 	private void bulkTree(String fileOutput) throws Exception { // Helper function
@@ -613,6 +617,6 @@ public class DFS {
 			}
 		}
 	}	
-	}
+}
 	
 
