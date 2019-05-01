@@ -66,3 +66,7 @@ margin-right:auto;
 .player_buttons {
   padding-top: 2em;
 }
+
+.music_search button{
+  margin: 1em;
+}

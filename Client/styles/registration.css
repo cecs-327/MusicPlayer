@@ -17,3 +17,7 @@ label {
 #regButton:hover{
     cursor: pointer;
 }
+
+#banner-registration{
+    padding-top: 3%;
+}

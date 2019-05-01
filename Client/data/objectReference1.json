@@ -1,6 +1,6 @@
 [{
 		"remoteMethod": {
-			"name": "login",
+			"name": "Login",
 			"object": "LoginServices",
 			"call-semantics": "at-most-one",
 			"param": {
@@ -12,7 +12,7 @@
 	},
 	{
 		"remoteMethod": {
-			"name": "registration",
+			"name": "registerUser",
 			"object": "RegistrationServices",
 			"call-semantics": "at-most-one",
 			"param": {
@@ -44,6 +44,108 @@
 				"song_title": "string",
 				"release_id": "long",
 				"artist_hottness": "long"
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "getUsersPlaylistsTitles",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"UserName": "string"
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "savePlaylist",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"userName": "string",
+				"existingTitle": "string",
+				"playlistTitle": "string",
+				"songsAdding": []
+				
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "getAPlaylistsSongsJSON",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"PlaylistTitle": "string",
+				"UserName": "string"
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "deletePlaylist",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"musicFileName": "String",
+				"fragment": 1
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "getSongChunck",
+			"object": "SongServices",
+			"call-semantics": "maybe",
+			"param": {
+				"musicFileName": "String",
+				"fragment": 1
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "searchSong",
+			"object": "SearchServices",
+			"call-semantics": "maybe",
+			"param": {
+				"userInput": "String",
+				"remoteMethod": "String"
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "savePlaylist",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"UserName": "String",
+				"existingTitle": "String",
+				"currentTitle": "String",
+				"songsToAdd": []
+			},
+			"return": "String"
+		}
+	},
+	{
+		"remoteMethod": {
+			"name": "saveSong",
+			"object": "PlaylistServices",
+			"call-semantics": "maybe",
+			"param": {
+				"eventListenerName": "String",
+				"musicFile": "String",
+				"artist": "String",
+				"songTitle": "String"
 			},
 			"return": "String"
 		}

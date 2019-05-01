@@ -17,3 +17,12 @@ label {
 .login-link{
     padding: 8px;
 }
+
+.Login-Title h1{
+    color: #00bc8c;
+    padding-top:1%;
+}
+
+#login-banner{
+    padding-top:2%;
+}

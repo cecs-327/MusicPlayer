@@ -1,0 +1,15 @@
+[
+    {
+        "eventListenerName": "message-registration",
+        "data": {
+            "success": true
+        }
+    },
+
+    {
+        "eventListenerName": "message-login",
+        "data": {
+            "success": true
+        }
+    }
+]

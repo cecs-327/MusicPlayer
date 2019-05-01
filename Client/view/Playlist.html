@@ -35,24 +35,19 @@
 </div>
 
 <div class="music_search">
-            <div class="search_type">
-               <input type="radio" id="search_song_title" value="song" name="dashboard" checked>
-               <label for="song">Song Title</label>
-               <input type="radio" id="search_song_artist" value="artist" name="dashboard">
-               <label for="artist">Artist</label>
-               <input type="radio" id="search_song_release" value="release" name="dashboard">
-               <label for="release">Release</label>
-            </div>
-            <input type="search" id="search_song" placeholder="Search For Songs..." onkeydown="search()"/>
-
-        </div>
-        <div class="music_playlist_results_player">
-            <div class="music_playlist_results">
-                <ul id="resultList">
-                    <!-- dynamically created li goes here -->
-                </ul>
-            </div>
-          </div>
+    <input type="search" id="search_song" placeholder="Search For Songs..." onkeydown="enterListen(event)"/>
+    <button onclick="search()">Search</button>
+</div>
+<div>
+  
+</div>
+<div class="music_playlist_results_player">
+  <div class="music_playlist_results">
+      <ul id="resultList">
+          <!-- dynamically created li goes here -->
+      </ul>
+  </div>
+</div>
 
 
   <div class ="fPlaylist" align="center">

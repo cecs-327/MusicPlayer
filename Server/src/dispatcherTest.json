@@ -1,0 +1,12 @@
+{
+	"remoteMethod": {
+		"name": "registerUser",
+		"object": "RegistrationServices",
+		"call-semantics": "at-most-one",
+		"param": {
+			"UserName": "Bruce",
+			"Password": "wayne"
+		},
+		"return": "String"
+	}
+}

@@ -1,0 +1,40 @@
+#Switching Branches
+git checkout
+
+#Creating a new Branch and switch to it
+git checkout -b <branchName>
+#branchName should be begin as either bug/ feature/ documentation/ or breaking_Change/
+
+#list Branches
+git branch
+
+#Delete a local branch if no difference between master and the branch
+git branch -d <branchName>
+
+#Delete a local branch forcefully
+git branch -D <branchName>
+
+#In order to create a new branch to the repository you must commit changes with a new branch, i.e.
+git checkout -b feature/Registration #new local branch created
+git add <someChanges>
+git commit -m "Added someChanges" 
+git push origin <branchName>#new repository branch created
+
+#How a branching flow will go
+git checkout -b feature/Registration #new local branch created
+git add <someChanges>
+git commit -m "Added someChanges" #new repository branch created
+git push origin <branchName>
+#Navigate to the repository on github and click the green button create pull request
+#Fill out the pull request template and submit pull request
+#Slack message requesting a review
+#Discuess and fix any changes that are needed and repush those changes
+#Once approved submit pull request and click the delete branch button to delete repository branch
+git checkout master
+git branch -d <branchName>
+
+#Dealing with merge conflicts
+#talk to both parties whose code you are conflicting with
+#Discuss which changes to keep and remove the other parties changes
+
+#Any weird issues message slack

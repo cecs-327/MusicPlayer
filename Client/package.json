@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/cecs-327/MusicPlayer#readme",
   "dependencies": {
+    "dgram": "^1.0.1",
     "electron": "^4.0.3"
   }
 }
