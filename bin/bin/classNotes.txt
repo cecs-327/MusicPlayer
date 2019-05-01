@@ -1,0 +1,86 @@
+chapter 8 & 9 & 10
+lab assignments of javascript 
+
+
+chapter 12 project 3
+chapter 13 project 3
+
+
+
+---------424------------
+
+assignment 5 due may 8 
+
+each statement 
+	predicates with 3 arguments 
+	
+solution 
+	who saw what on which day 
+
+is there a solution or not? more than one?
+
+
+when you ask it, prolog views the request as a exisit.
+when you declare it , prolog views it as universal
+prolog
+ Brother pat ads
+true 
+Brother X, ads 
+x = pat
+
+it can tell you if it is true
+it can tell you what makes it true
+and if there are more than one way it will tell you 
+
+
+part 2
+
+
+
+-------------------
+1 page front and back of notes
+chapter 8 and 9, mostly on chapter 9, 
+short coding 
+lab assignments 
+one hour examine 
+
+
+------------------
+
+lab34 
+
+include 'include/book-utilities.inc.php';
+
+
+$arr = file(filename) = die("error: cannot find file"):
+
+foreach( $arr as $line)
+	$splitcontents = explode( $delimiter, $line);
+	
+	$aCustomer = array();
+	$aCustomer['id'] = $splitcontent[0]
+	
+
+function readOrders( $customer, $filename)
+{
+	$arr = file($filename)
+
+	$delimiter = ',';
+
+	foreac($arr as $line)
+	{
+		$anOrder[] = $splitcontents[]
+		$orders[] = $anOrder;
+	}
+
+	foreach($orders as $ord)
+	{
+		if($ord['customer'] == $customer) 
+		{
+			
+		}
+	}
+
+
+
+
