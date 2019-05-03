@@ -506,108 +506,129 @@ public class DFS {
 		writeMetaData(filesJson);
 
 	}
-
-	public void emit(String key, JsonObject value, String file) {
-		 for (int i = 0; i < filesJson.getSize(); i++) {
-   			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(file)) {
-   				ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-   				
-   				//iterate through pages of fileinput 
-   				for (int j = 0; j < pages.size(); j++) {
-					if(pages.get(j).lowerBoundInterval <= key && key<pages.get(j+1).lowerBoundInterval) {
-						pages.get(j).addKeyValue(key,value);
-					}
-
-   				}
-   				
 	
-   			}
-   			}
-	}
-   			
-   			
-   			
 	int fileInputCounter =0;
-
-	public void runMapReduce(String fileInput, String fileOutput) {
-		int size = 0; // If the remote methods are in Chord, then size is a
-		// variable of Chord
+	
+	public void runMapReduce(String fileInput, String fileOutput) throws Exception {
+		/**
+		 * How is size updated?
+		 */
+	    int size = 0; // If the remote methods are in Chord, then size is a variable of Chord
+	    int interval = 1936 / size; // Assuming 38 characters A-Z, 0-9, _, +.
+	    Mapper mapreducer = new Mapper();
+	    
 		filesJson = readMetaData();
-
-		// need to complete onChordSize so we can determine what guid parameter
-
-		chord.successor.onChordSize(guid, 1); // Obtain the number of nodes
-		// while loop for size of network
-		while (filesJson.getSize() > 0) {
-			Thread.sleep(10);
-			int interval = 1936 / size; // Assuming 38 characters A-Z, 0-9, _, +.
-			// 1936 = 38*38
-			createFile(fileOutput + ".map", interval, size);
-			// mapreducer is an instance of the class that
-			// implements MapReduceInterface
-			// for each page in fileInput
-			for (int i = 0; i < filesJson.getSize(); i++) {
-				if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
-					ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages();
-
-					// iterate through pages of fileinput
-					for (int j = 0; j < inputList.size(); j++) {
-
-						PagesJson page = inputList.get(j);
-
-						fileInputCounter++;
-						ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-
-						// need to complete mapContext function to figure out what mapreducer parameter
-						// is
-						peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
-					}
-
-				}
-				// Obtained from onNetworkSize after a full cycle
-			}
-
-			// while page ==0 set timer/ sleep thread.sleep for 10 milliseconds
-			// while counter ==0 then sleep
-			while (fileInputCounter == 0) {
-				Thread.sleep(10);
-
-				bulkTree(fileOutput + ".map");
-				createFile(fileOutput, interval, size);
-				// for each page in fileOutput + ".map"{
-				for (int i = 0; i < filesJson.getSize(); i++) {
-					if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
-						ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-						for (int b = 0; b < pages.size(); b++) {
-							PagesJson page = pages.get(b);
-							fileInputCounter++;
-							ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-							// need to complete reduceContext function to figure out what mapreducer
-							// parameter is
-							peer.reduceContext(page.guid, mapreducer, this, fileOutput);
-						}
-					}
-				}
-			}
-		}
-		;
-		while (fileInputCounter == 0) {
-			Thread.sleep(10);
-			bulkTree(fileOutput);
-		}
+		
+		//need to complete onChordSize so we can determine what guid parameter
+		/**
+		 * What is guid supposed to be?
+		 * Also will size be update by a return value of onChordSize?
+		 */
+	    size = chord.successor.onChordSize(chord.successor.getId(), 1); // Obtain the number of nodes
+	    //while loop for size of network
+	    while (filesJson.getSize() > 0)
+	    {
+	    	Thread.sleep(10);
+    	    //1936 = 38*38
+	    	  createFile(fileOutput + ".map", interval, size);
+	    	// mapreducer is an instance of the class that
+	      	// implements MapReduceInterface
+	      	//for each page in fileInput
+	          for (int i = 0; i < filesJson.getSize(); i++) {
+	      			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
+	      				ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages();
+	      				
+	      				//iterate through pages of fileinput 
+	      				for (int j = 0; j < inputList.size(); j++) {
+	      					
+	      					PagesJson page = inputList.get(j);
+	
+	      					fileInputCounter++;
+	      			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+	      			    	
+	      			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
+	      				}
+	      	
+	  		
+	      			}
+	          }
+	    }
+	   
+	    	
+			
+			//while page ==0 set timer/ sleep thread.sleep for 10 milliseconds
+	    	//while counter ==0 then sleep
+	    while (fileInputCounter == 0)
+	    {
+		    	Thread.sleep(10);
+		    	
+		    
+		    	bulkTree(fileOutput + ".map");
+		    	createFile(fileOutput, interval, size);
+		    	//    for each page in fileOutput + ".map"{
+				    for (int i = 0; i < filesJson.getSize(); i++) {
+				    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
+				    		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
+				    		for(int b =0; b <pages.size();b++) {
+					    		PagesJson page = pages.get(b);
+					       		fileInputCounter++;
+					    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+					    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
+				    		}
+				    	}
+				    }
+	    }
+	    
+	    while(fileInputCounter == 0)
+	    {
+	        	Thread.sleep(10);
+	        	bulkTree(fileOutput);
+	    }
+	    
 	}
 
-	private void createFile(String fileOutput, int interval, int size) { // Helper function
+	private void createFile(String fileOutput, int interval, int size) throws Exception { // Helper function
+		
 		int lower = 0;
 		create(fileOutput);
 		for (int i = 0; i <= size - 1; i++) {
-			long page = md5(fileOutput + i);
+			long pageId = md5(fileOutput + i);
 			double lowerBoundInterval = (Math.floor(lower / 38)) + (lower % 38);
 
 			// appendEmptyPage needs to be created
-			appendEmptyPage(fileOutput, page, lowerBoundInterval);
+			appendEmptyPage(fileOutput, pageId, lowerBoundInterval);
 			lower += interval;
 		}
+		
+	}
+	
+	private void appendEmptyPage(String fileOutput, long pageId, double lowerBoundInterval) throws Exception 
+	{
+		filesJson = readMetaData();
+		for (int i = 0; i < filesJson.getSize(); i++) {
+			// append the page to the file specified by the user
+			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
+				Long sizeOfFile = (long) 0;
+				String timeOfAppend = LocalDateTime.now().toString();
+				filesJson.getFileJson(i).setWriteTS(timeOfAppend);
+				filesJson.getFileJson(i).addNumOfPages(1);
+
+				// create the page metadata information
+				Long guid = pageId;
+
+				/**
+				 * No need to add data since its an empty page?
+				 * ChordMessageInterface peer = chord.locateSuccessor(guid); 
+				 * peer.put(guid,data);
+				 */
+
+				Long defaultZero = new Long(0);
+				filesJson.getFileJson(i).addPageInfo(guid, sizeOfFile, timeOfAppend, "0", "0", 0);
+
+			}
+
+		}
+		writeMetaData(filesJson);
 	}
 
 	private void bulkTree(String fileOutput) throws Exception { // Helper function
@@ -627,7 +648,11 @@ public class DFS {
 					}
 				}
 			}
-
 		}
 	}
+
+	public void emit(String key, JsonObject values, String file) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

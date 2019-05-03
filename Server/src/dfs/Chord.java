@@ -566,4 +566,28 @@ public void bulk(long page) {
 	// TODO Auto-generated method stub
 	
 }
+
+
+
+@Override
+public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+@Override
+public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
+	// TODO Auto-generated method stub
+	
+}
+
+
+
+@Override
+public int onChordSize(long id, int i) {
+	// TODO Auto-generated method stub
+	return 0;
+}
 }
