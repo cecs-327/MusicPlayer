@@ -39,6 +39,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     long guid;
     // path prefix
     String prefix;
+    int size = 0;
 
 
 
@@ -561,33 +562,39 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 
 
 
-@Override
-public void bulk(long page) {
-	// TODO Auto-generated method stub
+	@Override
+	public void bulk(long page) {
+		// TODO Auto-generated method stub
+		
+	}
 	
-}
-
-
-
-@Override
-public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string) {
-	// TODO Auto-generated method stub
 	
-}
-
-
-
-@Override
-public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
-	// TODO Auto-generated method stub
 	
-}
-
-
-
-@Override
-public int onChordSize(long id, int i) {
-	// TODO Auto-generated method stub
-	return 0;
-}
+	@Override
+	public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String file) {
+		// TODO Auto-generated method stub
+		/**
+		 * Go through given page (which is part of music.json) by the guid, parse through the pages key value and find wanted fields
+		 * Map the fields through the mapper to the corresponding intervals
+		 */
+	}
+	
+	
+	
+	@Override
+	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+	@Override
+	public void onChordSize(long id, int i)throws RemoteException {
+		//create local variable size, set size = i when id is the id so need to return
+		if(id != this.getId())
+			successor.onChordSize(id, i++);
+		else
+			size = i;
+	}
 }
