@@ -23,5 +23,5 @@ public interface ChordMessageInterface extends Remote
 	public void bulk(long page);
 	public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string);
 	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput);
-	public int onChordSize(long id, int i);
+	public void onChordSize(long id, int i) throws RemoteException;
 }
