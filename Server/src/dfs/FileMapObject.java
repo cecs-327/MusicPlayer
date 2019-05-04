@@ -3,6 +3,7 @@ package dfs;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class FileMapObject {
@@ -37,6 +38,14 @@ public class FileMapObject {
 		return fileName;
 	}
 	
+	public void print() {
+		System.out.println("Printing .map object");
+		System.out.println("FileMapObject: " + fileName);
+		for(Page page: pages) {
+			page.print();
+		}
+	}
+	
 	public class Page{
 		private TreeMap<String, List<JsonObject>> data;
 		private String lowerBoundInterval;
@@ -67,6 +76,16 @@ public class FileMapObject {
 		
 		public String getLowerBound() {
 			return lowerBoundInterval;
+		}
+		
+		public void print() {
+			for (Map.Entry<String, List<JsonObject>> entry : data.entrySet()) {
+			     System.out.print("Key: " + entry.getKey());
+			     for(JsonObject obj : entry.getValue()) {
+			    	 System.out.print(obj.toString() + " ");
+			     }
+			     System.out.println();
+			}
 		}
 	}
 }

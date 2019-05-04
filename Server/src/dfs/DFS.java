@@ -521,9 +521,10 @@ public class DFS {
 	    chord.successor.onChordSize(chord.successor.getId(), 1); // Obtain the number of nodes currently active
 
 	    while(chord.size == 0) {
+	    	System.out.println("Waiting on chord size");
 	    	Thread.sleep(10);
 	    }
-	    
+	    System.out.println("Finished getting network size");
 	    int size = chord.size;
 	    int interval = 1444 / size; // Hard value comes from 38 * 38 from the index table size
 	    
@@ -541,14 +542,18 @@ public class DFS {
   				
   				//iterate through pages of fileinput 
   				for (int j = 0; j < inputList.size(); j++) { //going through pages in music.json
-  					
+  					System.out.println("Going through pages");
   					PagesJson page = inputList.get(j);
 
   					fileInputCounter++;
   			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid); //finds the chord which holds the page
   			    	//Just music.json file to parse as mapContext
+  			    	System.out.println("Going through mapContext");
+  			    	fileMapObject.print();
   			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
   				}
+  				System.out.println("Done going through mapContext");
+//		    	fileMapObject.print();
   	
 	
   			}
@@ -560,11 +565,11 @@ public class DFS {
 	    /**
 	     * To wait for all coordinators to say that they are okay!
 	     */
-	    while (fileInputCounter > 0)
+	    while (fileInputCounter >= 0)
 	    {
 	    	Thread.sleep(10);
 	    }
-
+	    System.out.println("Finished mapContext");
 	    /**
 	     * TODO
 	     * 
@@ -574,32 +579,32 @@ public class DFS {
 	     * in the fileMapObject, each page should contain the TreeMap data from the page it was created from.
 	     * 
 	     */
-    	create(fileOutput);
-    	for(Page page : fileMapObject.getPages()) {
-    		fileInputCounter++;
-    		reduceContext(page.getId(), mapreducer);
-    	}
-    	//    for each page in fileOutput + ".map"{
-		    for (int i = 0; i < filesJson.getSize(); i++) {
-		    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
-		    		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
-		    		for(int b =0; b <pages.size();b++) {
-			    		PagesJson page = pages.get(b);
-			       		fileInputCounter++;
-			    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
-			    		/**
-			    		 * At this point the data in the page is already trimmed and sorted, just needs to be resorted based on hotness
-			    		 * Should allow for code reuse of previous functions
-			    		 */
-			    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
-		    		}
-		    	}
-		    }
-	    
-	    while(fileInputCounter > 0)
-	    {
-        	Thread.sleep(10);
-	    }
+//    	create(fileOutput);
+//    	for(Page page : fileMapObject.getPages()) {
+//    		fileInputCounter++;
+//    		reduceContext(page.getId(), mapreducer);
+//    	}
+//    	//    for each page in fileOutput + ".map"{
+//		    for (int i = 0; i < filesJson.getSize(); i++) {
+//		    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
+//		    		ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
+//		    		for(int b =0; b <pages.size();b++) {
+//			    		PagesJson page = pages.get(b);
+//			       		fileInputCounter++;
+//			    		ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+//			    		/**
+//			    		 * At this point the data in the page is already trimmed and sorted, just needs to be resorted based on hotness
+//			    		 * Should allow for code reuse of previous functions
+//			    		 */
+//			    		peer.reduceContext(page.guid, mapreducer, this, fileOutput);
+//		    		}
+//		    	}
+//		    }
+//	    
+//	    while(fileInputCounter > 0)
+//	    {
+//        	Thread.sleep(10);
+//	    }
 	    
 //	    bulkTree(fileOutput);
 	    

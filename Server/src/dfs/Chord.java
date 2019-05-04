@@ -7,15 +7,15 @@ package dfs;
 * @version 0.15
 * @since   03-3-2019
 */
-
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
 import java.net.*;
 import java.util.*;
 import java.io.*;
-import com.google.gson.Gson;
+
 import com.google.gson.*;
+import gson.*;
 /**
  * Chord extends from UnicastRemoteObject to support RMI.
  * It implements the ChordMessageInterface
@@ -561,51 +561,11 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
         }
     }
     
-    public void mapContext(DFS.PagesJson page, Mapper mapper, DFS coordinator, String file) throws IOException {
-    	System.out.println("Started mapContext");
-    	long guid = page.getGuid();
-    	ChordMessageInterface peer = coordinator.chord.locateSuccessor(guid);
-    	RemoteInputFileStream r = peer.get(guid);
-    	
-    	r.connect();
-    	Scanner scan = new Scanner(r);
-    	scan.useDelimiter("\\A");
-    	String metaData = "";
-    	
-    	int i;
-    	while((i = r.read()) != -1){
-    		metaData += ((char) i);
-        }
-    	//Errors possible in JSON
-    	JsonParser p = new JsonParser();
-    	JsonObject json = p.parse(metaData).getAsJsonObject();
-    	JsonArray jsonArray = json.getAsJsonArray("songs");
-    	for(JsonElement e : jsonArray) {
-    		JsonObject temp = new Gson().fromJson(e.getAsString(), JsonObject.class);
-    		mapper.map("key", temp, coordinator, file);
-    	}
-    	coordinator.onPageCompleted();
-    }
-
-
-
 	@Override
 	public void bulk(long page) {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
-	
-	@Override
-	public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String file) {
-		// TODO Auto-generated method stub
-		/**
-		 * Go through given page (which is part of music.json) by the guid, parse through the pages key value and find wanted fields
-		 * Map the fields through the mapper to the corresponding intervals
-		 */
-	}
-	
 	
 	
 	@Override
@@ -617,9 +577,43 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 	@Override
 	public void onChordSize(long id, int i)throws RemoteException {
 		//create local variable size, set size = i when id is the id so need to return
+		System.out.println("Setting chord size");
 		if(id != this.getId())
 			successor.onChordSize(id, i++);
-		else
-			size = i;
+		else {
+			size = i++;
+			System.out.println("Chord Size: " + size);
+		}
+			
+	}
+
+
+
+	@Override
+	public void mapContext(Long pageId, Mapper mapper, DFS coordinator, String file) throws Exception {
+		System.out.println("\nStarted mapContext");
+    	ChordMessageInterface peer = coordinator.chord.locateSuccessor(pageId);
+    	RemoteInputFileStream r = peer.get(pageId);
+    	
+    	r.connect();
+    	Scanner scan = new Scanner(r);
+    	scan.useDelimiter("\\A");
+    	 StringBuilder fileInfo = new StringBuilder();
+    	int j;
+    	System.out.println();
+    	while((j = r.read()) != -1){
+    		fileInfo.append((char)j);
+        }
+    	System.out.println("Read page");
+    	//Errors possible in JSON
+    	JsonParser parser = new JsonParser();
+    	JsonArray jsonArray = parser.parse(fileInfo.toString()).getAsJsonArray();
+    	for(int i = 0; i < jsonArray.size(); i++) {
+    		if(i < 2) {
+        		mapper.map("key", jsonArray.get(i), coordinator, file);
+    		}
+    	}
+    	coordinator.onPageCompleted();
+		scan.close();
 	}
 }
