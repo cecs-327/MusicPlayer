@@ -10,6 +10,8 @@ import java.security.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import dfs.FileMapObject.Page;
+
 import java.util.*;
 import java.time.LocalDateTime;
 
@@ -36,6 +38,7 @@ import java.time.LocalDateTime;
 */
 
 public class DFS {
+	FileMapObject fileMapObject;
 	public class PagesJson {
 		Long guid;
 		Long size;
@@ -43,6 +46,7 @@ public class DFS {
 		String readTS;
 		String writeTS;
 		int referenceCount;
+		
 
 		public PagesJson(Long guid, Long size, String creationTS, String readTS, String writeTS, int referenceCount) {
 
@@ -490,7 +494,7 @@ public class DFS {
 				// create the page metadata information
 				String objectName = filename + timeOfAppend;
 				Long guid = md5(objectName);
-
+				
 				ChordMessageInterface peer = chord.locateSuccessor(guid);
 				peer.put(guid, data);
 				// chord locate successor , then put
@@ -511,7 +515,7 @@ public class DFS {
 	
 	public void runMapReduce(String fileInput, String fileOutput) throws Exception {
 	    Mapper mapreducer = new Mapper();
-	    
+
 		filesJson = readMetaData();
 		
 	    chord.successor.onChordSize(chord.successor.getId(), 1); // Obtain the number of nodes currently active
@@ -519,11 +523,13 @@ public class DFS {
 	    while(chord.size == 0) {
 	    	Thread.sleep(10);
 	    }
+	    
 	    int size = chord.size;
-	    int interval = 1444 /size; // Hard value comes from 38 * 38 from the index table size
+	    int interval = 1444 / size; // Hard value comes from 38 * 38 from the index table size
 	    
     	/**
     	 * Creates a blank file with enough pages to hold all information for the interval
+    	 * Creating FileMap class
     	 */
     	createFile(fileOutput + ".map", interval, size);
     	// mapreducer is an instance of the class that
@@ -531,15 +537,15 @@ public class DFS {
       	//for each page in fileInput
     	for (int i = 0; i < filesJson.getSize(); i++) {
     		if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
-    			ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages();
+    			ArrayList<PagesJson> inputList = filesJson.getFileJson(i).getPages(); //music.json getting all pages
   				
   				//iterate through pages of fileinput 
-  				for (int j = 0; j < inputList.size(); j++) {
+  				for (int j = 0; j < inputList.size(); j++) { //going through pages in music.json
   					
   					PagesJson page = inputList.get(j);
 
   					fileInputCounter++;
-  			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid);
+  			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid); //finds the chord which holds the page
   			    	//Just music.json file to parse as mapContext
   			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
   				}
@@ -547,7 +553,6 @@ public class DFS {
 	
   			}
       	}
-	   
 	    	
 			
 			//while page ==0 set timer/ sleep thread.sleep for 10 milliseconds
@@ -558,10 +563,15 @@ public class DFS {
 	    while (fileInputCounter == 0)
 	    {
 	    	Thread.sleep(10);
-	    }	
+	    }
 	    
     	bulkTree(fileOutput + ".map");
-    	createFile(fileOutput, interval, size);
+    	//createFile(fileOutput, interval, size);
+    	create(fileOutput);
+    	for(Page page : fileMapObject.getPages()) {
+    		fileInputCounter++;
+    		reduceContext(page.getId(), mapreducer)
+    	}
     	//    for each page in fileOutput + ".map"{
 		    for (int i = 0; i < filesJson.getSize(); i++) {
 		    	if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput + ".map")) {
@@ -591,47 +601,16 @@ public class DFS {
 	private void createFile(String fileOutput, int interval, int size) throws Exception { // Helper function
 		
 		int lower = 0;
-		create(fileOutput);
+		fileMapObject = new FileMapObject(fileOutput);
 		for (int i = 0; i <= size - 1; i++) {
 			long pageId = md5(fileOutput + i);
-			//TODO change to string to concatenate as "aa" || "m8"
 			//Each page should hold an interval
-			double lowerBoundInterval = (Math.floor(lower / 38)) + (lower % 38);
-
+			String lowerBoundInterval = Double.toString((Math.floor(lower / 38))) + Double.toString((lower % 38));
 			// appendEmptyPage needs to be created
-			appendEmptyPage(fileOutput, pageId, lowerBoundInterval);
+			fileMapObject.appendEmptyPage(Long.toString(pageId), lowerBoundInterval);
 			lower += interval;
 		}
 		
-	}
-	
-	private void appendEmptyPage(String fileOutput, long pageId, double lowerBoundInterval) throws Exception 
-	{
-		filesJson = readMetaData();
-		for (int i = 0; i < filesJson.getSize(); i++) {
-			// append the page to the file specified by the user
-			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
-				Long sizeOfFile = (long) 0;
-				String timeOfAppend = LocalDateTime.now().toString();
-				filesJson.getFileJson(i).setWriteTS(timeOfAppend);
-				filesJson.getFileJson(i).addNumOfPages(1);
-
-				// create the page metadata information
-				Long guid = pageId;
-
-				/**
-				 * No need to add data since its an empty page?
-				 * ChordMessageInterface peer = chord.locateSuccessor(guid); 
-				 * peer.put(guid,data);
-				 */
-
-				Long defaultZero = new Long(0);
-				filesJson.getFileJson(i).addPageInfo(guid, sizeOfFile, timeOfAppend, "0", "0", 0);
-
-			}
-
-		}
-		writeMetaData(filesJson);
 	}
 
 	private void bulkTree(String fileOutput) throws Exception { // Helper function

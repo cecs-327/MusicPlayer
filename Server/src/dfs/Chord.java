@@ -585,9 +585,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	
+	}	
 	
 	@Override
 	public void onChordSize(long id, int i)throws RemoteException {
