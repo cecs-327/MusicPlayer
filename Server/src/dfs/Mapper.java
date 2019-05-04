@@ -18,18 +18,17 @@ public class Mapper implements MapReduceInterface {
 		//TODO values must be appropriately filled
 		String newKey = "";
 		JsonObject newValue = null;
-		context.emit(newKey, newValue, file);	
+		context.fileMapObject.emit(newKey, newValue);
 	}
 
 	@Override
 	public void reduce(String key, JsonObject values, DFS context, String file) throws IOException {
 		sort(values);
-		context.emit(key, values, file);
+		context.fileMapObject.emit(key, values);
 	}
 	
 	private JsonObject sort(JsonObject valuesUnsorted) {
 		//TODO sort
 		return null;
-		
 	}
 }
