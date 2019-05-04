@@ -654,10 +654,28 @@ public class DFS {
 		}
 	}
 
-	public void emit(String key, JsonObject values, String file) {
-		// TODO Auto-generated method stub
-		//emit should store incoming values in the local treemap variable of the peer
-		//bulk is then called which stored the local treemap value inside of a page using bulktree
+		public void emit(String key, JsonObject value, String file) {
+			
+			FileMapObject fileObj = new FileMapObject(file);
+			 for (int i = 0; i < filesJson.getSize(); i++) {
+	   			if (filesJson.getFileJson(i).getName().equalsIgnoreCase(file)) {
+	   				ArrayList<PagesJson> pages = filesJson.getFileJson(i).getPages();
+	   				
+	   				//iterate through pages of fileinput 
+	   				
+	   				//make sure hwen we hit last page, no more j+1, if page i is the last page
+	   				//if page[j].pageId ==fileOutput.pages[fileouput.pages.length-1].pageId
+	   				for (int j = 0; j < pages.size(); j++) {
+						if(pages.get(j).lowerBoundInterval <= key && key<pages.get(j+1).lowerBoundInterval) {
+							pages.get(j).addKeyValue(key,value);
+						}
+
+	   				}
+	   				
+		
+	   			}
+	   			}
+		}
 		
 	}	
 }
