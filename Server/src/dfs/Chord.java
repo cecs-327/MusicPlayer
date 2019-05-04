@@ -15,6 +15,7 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import com.google.gson.Gson;
+import com.google.gson.*;
 /**
  * Chord extends from UnicastRemoteObject to support RMI.
  * It implements the ChordMessageInterface
@@ -558,6 +559,28 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
         catch(RemoteException e){
 	       System.out.println("Cannot retrive id of successor or predecessor");
         }
+    }
+    
+    public void mapContext(DFS.PagesJson page, Mapper mapper, DFS coordinator, String file) throws IOException {
+    	long guid = page.getGuid();
+    	ChordMessageInterface peer = coordinator.chord.locateSuccessor(guid);
+    	RemoteInputFileStream r = peer.get(guid);
+    	
+    	r.connect();
+    	Scanner scan = new Scanner(r);
+    	scan.useDelimiter("\\A");
+    	String metaData = null;
+    	while(scan.hasNext()) {
+    		metaData += scan.next();
+    	}
+    	JsonParser p = new JsonParser();
+    	JsonObject json = p.parse(metaData).getAsJsonObject();
+    	JsonArray jsonArray = json.getAsJsonArray("songs");
+    	for(JsonElement e : jsonArray) {
+    		JsonObject temp = new Gson().fromJson(e.getAsString(), JsonObject.class);
+    		mapper.map("key", temp, coordinator, file);
+    	}
+    	coordinator.onPageCompleted(file);
     }
 
 
