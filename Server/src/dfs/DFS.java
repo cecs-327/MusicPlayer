@@ -38,7 +38,6 @@ import java.time.LocalDateTime;
 */
 
 public class DFS {
-	FileMapObject fileMapObject;
 	public class PagesJson {
 		Long guid;
 		Long size;
@@ -261,7 +260,6 @@ public class DFS {
 		});
 
 	}
-
 	/**
 	 * Join the chord
 	 *
@@ -511,9 +509,11 @@ public class DFS {
 
 	}
 	
-	int fileInputCounter =0;
+	int fileInputCounter;
+	FileMapObject fileMapObject;
 	
 	public void runMapReduce(String fileInput, String fileOutput) throws Exception {
+		fileInputCounter = 0;
 	    Mapper mapreducer = new Mapper();
 
 		filesJson = readMetaData();
@@ -560,17 +560,24 @@ public class DFS {
 	    /**
 	     * To wait for all coordinators to say that they are okay!
 	     */
-	    while (fileInputCounter == 0)
+	    while (fileInputCounter > 0)
 	    {
 	    	Thread.sleep(10);
 	    }
-	    
-    	bulkTree(fileOutput + ".map");
-    	//createFile(fileOutput, interval, size);
+
+	    /**
+	     * TODO
+	     * 
+	     * This section should create a file in a normal using the create(fileOutput)
+	     * 
+	     * Section should then loop through all pages of the fileMapObject and append a page to the newly create fileOutput for each page
+	     * in the fileMapObject, each page should contain the TreeMap data from the page it was created from.
+	     * 
+	     */
     	create(fileOutput);
     	for(Page page : fileMapObject.getPages()) {
     		fileInputCounter++;
-    		reduceContext(page.getId(), mapreducer)
+    		reduceContext(page.getId(), mapreducer);
     	}
     	//    for each page in fileOutput + ".map"{
 		    for (int i = 0; i < filesJson.getSize(); i++) {
@@ -589,12 +596,12 @@ public class DFS {
 		    	}
 		    }
 	    
-	    while(fileInputCounter == 0)
+	    while(fileInputCounter > 0)
 	    {
         	Thread.sleep(10);
 	    }
 	    
-	    bulkTree(fileOutput);
+//	    bulkTree(fileOutput);
 	    
 	}
 
@@ -613,32 +620,35 @@ public class DFS {
 		
 	}
 
-	private void bulkTree(String fileOutput) throws Exception { // Helper function
-		int size = 0;
-		// only using output file and all the pages of that
-		// read fileoutput and check how many pages in it
-		for (int i = 0; i < filesJson.getSize(); i++) {
-			{
-				if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
-					ArrayList<PagesJson> pagesList = filesJson.getFileJson(i).getPages();
-					// iterate through pages of fileOutput and bulk
-					for (int j = 0; j < pagesList.size(); j++) {
-						long pageGuid = pagesList.get(j).getGuid();
-						long page = md5(fileOutput + i);
-						ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
-						peer.bulk(page);
-					}
-				}
-			}
-		}
+	public void onPageCompleted() {
+		fileInputCounter--;
 	}
-
-	public void emit(String key, JsonObject values, String file) {
-		// TODO Auto-generated method stub
-		//emit should store incoming values in the local treemap variable of the peer
-		//bulk is then called which stored the local treemap value inside of a page using bulktree
+	
+	public void reduceContext(String pageId, Mapper mapreducer) {
 		
-	}	
+	}
+	
+//	private void bulkTree(String fileOutput) throws Exception { // Helper function
+//		int size = 0;
+//		// only using output file and all the pages of that
+//		// read fileoutput and check how many pages in it
+//		for (int i = 0; i < filesJson.getSize(); i++) {
+//			{
+//				if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileOutput)) {
+//					ArrayList<PagesJson> pagesList = filesJson.getFileJson(i).getPages();
+//					// iterate through pages of fileOutput and bulk
+//					for (int j = 0; j < pagesList.size(); j++) {
+//						long pageGuid = pagesList.get(j).getGuid();
+//						long page = md5(fileOutput + i);
+//						ChordMessageInterface peer = chord.locateSuccessor(pageGuid);
+//						peer.bulk(page);
+//					}
+//				}
+//			}
+//		}
+//	}
+
+		
 }
 	
 

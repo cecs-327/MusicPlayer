@@ -562,6 +562,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     }
     
     public void mapContext(DFS.PagesJson page, Mapper mapper, DFS coordinator, String file) throws IOException {
+    	System.out.println("Started mapContext");
     	long guid = page.getGuid();
     	ChordMessageInterface peer = coordinator.chord.locateSuccessor(guid);
     	RemoteInputFileStream r = peer.get(guid);
@@ -569,10 +570,13 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     	r.connect();
     	Scanner scan = new Scanner(r);
     	scan.useDelimiter("\\A");
-    	String metaData = null;
-    	while(scan.hasNext()) {
+    	String metaData = "";
+    	
+    	//While loop will take a while, RemoteInputFileStream has a function called read which uses threading, see function in DFSCommand "read" which uses it
+    	while(scan.hasNext()) { 
     		metaData += scan.next();
     	}
+    	
     	JsonParser p = new JsonParser();
     	JsonObject json = p.parse(metaData).getAsJsonObject();
     	JsonArray jsonArray = json.getAsJsonArray("songs");
@@ -580,7 +584,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     		JsonObject temp = new Gson().fromJson(e.getAsString(), JsonObject.class);
     		mapper.map("key", temp, coordinator, file);
     	}
-    	coordinator.onPageCompleted(file);
+    	coordinator.onPageCompleted();
     }
 
 
