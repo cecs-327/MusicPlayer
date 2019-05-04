@@ -19,10 +19,12 @@ public class FileMapObject {
 		pages.add(page);
 	}
 	
-	public void emit(String key, JsonObject value, String pageId) {
-		for(Page page : pages) {
-			if(page.getId().equals(pageId)) {
-				page.addKeyValue(key, value);
+	public void emit(String key, JsonObject value) {
+		for(int i = 0; i < pages.size(); i++) {
+			if(i == pages.size() - 1) {
+				pages.get(i).addKeyValue(key, value);
+			}else if(pages.get(i).getLowerBound().compareTo(key) < 0 && pages.get(i+1).getLowerBound().compareTo(key) > 0) {
+				pages.get(i).addKeyValue(key, value);
 			}
 		}
 	}
@@ -61,6 +63,10 @@ public class FileMapObject {
 		
 		public String getId() {
 			return pageId;
+		}
+		
+		public String getLowerBound() {
+			return lowerBoundInterval;
 		}
 	}
 }

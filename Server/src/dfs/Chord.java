@@ -572,11 +572,11 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     	scan.useDelimiter("\\A");
     	String metaData = "";
     	
-    	//While loop will take a while, RemoteInputFileStream has a function called read which uses threading, see function in DFSCommand "read" which uses it
-    	while(scan.hasNext()) { 
-    		metaData += scan.next();
-    	}
-    	
+    	int i;
+    	while((i = r.read()) != -1){
+    		metaData += ((char) i);
+        }
+    	//Errors possible in JSON
     	JsonParser p = new JsonParser();
     	JsonObject json = p.parse(metaData).getAsJsonObject();
     	JsonArray jsonArray = json.getAsJsonArray("songs");
