@@ -134,8 +134,11 @@ public class DFSCommand
     		}else {
     			dfs.create(songFile);
     			RemoteInputFileStream input = new RemoteInputFileStream(songPath);
+    			System.out.println("Appending file: " + songPath + "\nplease wait...");
                 dfs.append(songFile, input);
-                dfs.read(songFile, 0);
+                System.out.println("Finished appending file");
+                System.out.println("Running mapreduce method");
+    			dfs.runMapReduce(songFile, mapReduceFile);
     		}
     			
     		System.out.println("Finished with initalization");
