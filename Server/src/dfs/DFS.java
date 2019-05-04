@@ -553,7 +553,7 @@ public class DFS {
   			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
   				}
   				System.out.println("Done going through mapContext");
-//		    	fileMapObject.print();
+		    	fileMapObject.print();
   	
 	
   			}

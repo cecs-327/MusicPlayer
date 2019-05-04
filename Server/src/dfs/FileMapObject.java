@@ -1,5 +1,6 @@
 package dfs;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class FileMapObject {
 		pages.add(page);
 	}
 	
-	public void emit(String key, JsonObject value) {
+	public void emit(String key, JsonElement value) {
 		for(int i = 0; i < pages.size(); i++) {
 			if(i == pages.size() - 1) {
 				pages.get(i).addKeyValue(key, value);
@@ -47,24 +48,24 @@ public class FileMapObject {
 	}
 	
 	public class Page{
-		private TreeMap<String, List<JsonObject>> data;
+		private TreeMap<String, List<JsonElement>> data;
 		private String lowerBoundInterval;
 		private String pageId;
 		
 		public Page(String pageId, String lowerBoundInterval) {
 			this.lowerBoundInterval = lowerBoundInterval;
 			this.pageId = pageId;
-			data = new TreeMap<String, List<JsonObject>>();
+			data = new TreeMap<String, List<JsonElement>>();
 		}
 		
-		public void addKeyValue(String key, JsonObject value) {
+		public void addKeyValue(String key, JsonElement value) {
 			if(!data.containsKey(key)) {
-				List<JsonObject> tempList = new ArrayList<JsonObject>();
+				List<JsonElement> tempList = new ArrayList<JsonElement>();
 				tempList.add(value);
 				data.put(key,  tempList);
 			}
 			else{
-				List<JsonObject> tempList = data.get(key);
+				List<JsonElement> tempList = data.get(key);
 				tempList.add(value);
 				data.put(key, tempList);
 			}
@@ -79,9 +80,9 @@ public class FileMapObject {
 		}
 		
 		public void print() {
-			for (Map.Entry<String, List<JsonObject>> entry : data.entrySet()) {
+			for (Map.Entry<String, List<JsonElement>> entry : data.entrySet()) {
 			     System.out.print("Key: " + entry.getKey());
-			     for(JsonObject obj : entry.getValue()) {
+			     for(JsonElement obj : entry.getValue()) {
 			    	 System.out.print(obj.toString() + " ");
 			     }
 			     System.out.println();
