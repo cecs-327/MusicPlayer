@@ -125,8 +125,9 @@ public class DFSCommand
     	if(userInput.equals("yes") || userInput.equals("y")) {
     		String files = dfs.lists();
     		if(files.contains(mapReduceFile)) {
-    			System.out.println("Deleting old mapreduceFile");
+    			System.out.println("Deleting old mapreduceFile: " + mapReduceFile);
     			dfs.delete(mapReduceFile);
+    			System.out.println("File removed");
     		}
     		if(files.contains(songFile)) {
     			System.out.println("Running mapreduce method");

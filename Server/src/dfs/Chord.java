@@ -600,18 +600,13 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     	scan.useDelimiter("\\A");
     	 StringBuilder fileInfo = new StringBuilder();
     	int j;
-    	System.out.println();
     	while((j = r.read()) != -1){
     		fileInfo.append((char)j);
         }
-    	System.out.println("Read page");
-    	//Errors possible in JSON
     	JsonParser parser = new JsonParser();
     	JsonArray jsonArray = parser.parse(fileInfo.toString()).getAsJsonArray();
     	for(int i = 0; i < jsonArray.size(); i++) {
-    		if(i < 2) {
-        		mapper.map("key", jsonArray.get(i), coordinator, file);
-    		}
+    		mapper.map("key", jsonArray.get(i), coordinator, file);
     	}
     	coordinator.onPageCompleted();
 		scan.close();

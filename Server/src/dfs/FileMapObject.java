@@ -79,6 +79,10 @@ public class FileMapObject {
 			return lowerBoundInterval;
 		}
 		
+		public TreeMap<String, List<JsonElement>> getData(){
+			return data;
+		}
+		
 		public void print() {
 			for (Map.Entry<String, List<JsonElement>> entry : data.entrySet()) {
 			     System.out.print("Key: " + entry.getKey());
