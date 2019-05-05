@@ -638,16 +638,21 @@ public class DFS {
 	
 	public void reduceContext(Page page, Mapper mapreducer, String fileOutput) throws Exception {
 		TreeMap<String, List<JsonElement>> data = page.getData();
-		int i = 0;
+		int i = data.size();
 		String pageId = page.getId();
+		Mapper m = new Mapper();
+		/**
+		 * For each page in pages we need to create a new page for the fileOutput
+		 */
 		for (Map.Entry<String, List<JsonElement>> entry : data.entrySet()) {
-			if(i < 6) {
-				if(i == 5)
-					pageId = "128342937";
-				mapreducer.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
-				i++;
+			if(i > data.size() - 6) {
+				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
 			}
-			
+			if(i == 1) {
+				pageId = "0";
+				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
+			}	
+			i--;
 		}
 		onPageCompleted();
 	}

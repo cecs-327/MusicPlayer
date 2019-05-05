@@ -50,6 +50,20 @@ public class Mapper implements MapReduceInterface {
 	@Override
 	public void reduce(String key, List<JsonElement> values, DFS context, String file, String pageId) throws Exception {
 		//Any Additional sorting can be done here
+		/**
+		 * Key: Ti Monde (LP Version)
+		 * values:"artistName":"BeauSoleil"
+		 * 			"hottness":"0"
+		 * 			"fileName":"../mp3/bensound-sunny.mp3"
+		 * 
+		 * { Ti Monde (LP Version) : { 
+		 * 			artistName":"BeauSoleil",
+		 * 			"hottness":"0",
+		 * 			"fileName":"../mp3/bensound-sunny.mp3"
+		 * 			}
+		 * }
+		 * JsonObject or Parsing it differently
+		 */
 		if(currentPage.equals(""))
 			currentPage = pageId;
 		else if(currentPage != pageId) {
@@ -60,6 +74,7 @@ public class Mapper implements MapReduceInterface {
 			
 		System.out.println("Reduce called");
 		StringBuilder data = new StringBuilder();
+		
 		data.append("{\"" + key + "\":");
 		int i = values.size();
 		for(JsonElement ele : values) {
