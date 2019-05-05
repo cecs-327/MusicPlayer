@@ -60,7 +60,6 @@ public class SearchServices {
         for (int i = 0; i < array.size(); i++) {
                 list.add(array.get(i).getAsJsonObject());
         }
-
         try
         {
         	Collections.sort(list, new SortBasedOnHotness());

@@ -27,6 +27,7 @@ public class pathHolder {
 	public static String songFile = "songs";
 	public static String userFile = "user";
 	public static String playlistFile = "playlist";
+	public static String newMusicFile = "songsClean";
 
   public static String readFile(String fileName) throws Exception {
 	  FilesJson filesJson = dfs.readMetaData();
