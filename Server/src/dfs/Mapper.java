@@ -1,6 +1,8 @@
 package dfs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,7 @@ import com.google.gson.JsonParser;
 
 public class Mapper implements MapReduceInterface {
 	String currentPage = "";
-	JsonArray jArray = new JsonArray();
+	ArrayList<String> str = new ArrayList<String>();
 
 	@Override
 	public void map(String key, JsonElement value, DFS context, String file) throws IOException {
@@ -39,6 +41,7 @@ public class Mapper implements MapReduceInterface {
 
 		String jsonObject = "{\n\t\"artistName\": \"" + artistName + "\",\n\t\"hottness\": \"" + hottness
 				+ "\",\n\t\"fileName\": \"" + fileName + "\"\n}";
+		
 		
 		if (!songTitle.equals("")) {
 			JsonParser parser = new JsonParser();
@@ -67,14 +70,9 @@ public class Mapper implements MapReduceInterface {
 		if (currentPage.equals(""))
 			currentPage = pageId;
 		else if (currentPage != pageId) {
-			String jsonList = jArray.toString();
-			jsonList = jsonList.replace("\\", "");
-			jsonList = jsonList.replaceAll(".*\\[|\\].*", "");
-//			jsonList = jsonList.replaceAll(".%\\\"","");
-//			jsonList = jsonList.replace("\"","");
-			System.out.println("\n\nJSONARRAY.TOSTRING\n\n" + jsonList);
-			context.appendPage(file, jsonList, pageId);
-			jArray = new JsonArray();
+			System.out.println("All contents: "+ str.toString());
+			context.appendPage(file, str.toString(), pageId);
+			str = new ArrayList<String>();
 		}
 
 		System.out.println("Reduce called");
@@ -84,17 +82,13 @@ public class Mapper implements MapReduceInterface {
 		for (JsonElement ele : values) {
 			i--;
 			data.append(ele.toString());
-			if (i > 0)
-				data.append(',');
+			if (i > 0) {
+				data.append(",");
+			}
 		}
 		data.append("}");
-		System.out.println("\n" + data);
-		String jsonString = data.toString();
-//
-
-
-		jArray.add(jsonString);
-//		System.out.println("After adding data" + jArray.toString());
+		str.add(data.toString());
+		
 
 	}
 

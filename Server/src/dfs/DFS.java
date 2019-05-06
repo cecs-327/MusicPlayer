@@ -645,13 +645,14 @@ public class DFS {
 		 * For each page in pages we need to create a new page for the fileOutput
 		 */
 		for (Map.Entry<String, List<JsonElement>> entry : data.entrySet()) {
-			if(i > data.size() - 6) {
-				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
-			}
 			if(i == 1) {
 				pageId = "0";
 				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
 			}	
+			else {
+				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
+			}
+			
 			i--;
 		}
 		onPageCompleted();
