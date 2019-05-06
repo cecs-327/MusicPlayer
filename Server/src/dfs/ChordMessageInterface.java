@@ -20,8 +20,8 @@ public interface ChordMessageInterface extends Remote
     public RemoteInputFileStream get(long guidObject) throws IOException, RemoteException;   
     public byte[] get(long guidObject, long offset, int len) throws IOException, RemoteException;  
     public void delete(long guidObject) throws IOException, RemoteException;
-	public void bulk(long page);
-	public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string);
-	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput);
-	public int onChordSize(long id, int i);
+	public void bulk(long page) throws RemoteException;
+	public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string) throws Exception;
+	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) throws RemoteException;
+	public void onChordSize(long id, int i) throws RemoteException;
 }

@@ -6,7 +6,11 @@ import com.google.gson.Gson;
 public class DFSCommand
 {
     DFS dfs;
-
+    public static String userDir = System.getProperty("user.dir");
+	public static String songPath = userDir + "/src/data/musicComplete.json";
+	public static String songFile = "songs";
+	public static String mapReduceFile = "songsClean";
+    
     public DFSCommand(int p, int portToJoin) throws Exception {
         dfs = new DFS(p);
 
@@ -15,9 +19,13 @@ public class DFSCommand
             System.out.println("Joining somewhere"+ portToJoin);
             dfs.join("127.0.0.1", portToJoin);
         }
-
+        
         BufferedReader buffer=new BufferedReader(new InputStreamReader(System.in));
+        mapReduceTest(buffer);
+        
+        System.out.println("Please enter the next command");
         String line = buffer.readLine();
+        
         while (!line.equals("quit"))
         {
         	try {
@@ -54,7 +62,9 @@ public class DFSCommand
 	              dfs.delete(result[1]);
 	              System.out.println("Deleted "+result[1]+" from the page");
 	            }
-	
+	            else if(result[0].equals("mapreduce")) {
+	            	dfs.runMapReduce(result[1], result[2]);
+	            }
 	            else if (result[0].equals("read"))
 	            {
 	                int pageNumber = Integer.parseInt(result[2]);
@@ -108,6 +118,34 @@ public class DFSCommand
             // User interface:
             // join, ls, touch, delete, read, tail, head, append, move
     }
+    
+    public void mapReduceTest(BufferedReader buffer) throws Exception {
+    	System.out.println("Would you like to test mapreduce?");
+    	String userInput = buffer.readLine();
+    	if(userInput.equals("yes") || userInput.equals("y")) {
+    		String files = dfs.lists();
+    		if(files.contains(mapReduceFile)) {
+    			System.out.println("Deleting old mapreduceFile: " + mapReduceFile);
+    			dfs.delete(mapReduceFile);
+    			System.out.println("File removed");
+    		}
+    		if(files.contains(songFile)) {
+    			System.out.println("Running mapreduce method");
+    			dfs.runMapReduce(songFile, mapReduceFile);
+    		}else {
+    			dfs.create(songFile);
+    			RemoteInputFileStream input = new RemoteInputFileStream(songPath);
+    			System.out.println("Appending file: " + songPath + "\nplease wait...");
+                dfs.append(songFile, input);
+                System.out.println("Finished appending file");
+                System.out.println("Running mapreduce method");
+    			dfs.runMapReduce(songFile, mapReduceFile);
+    		}
+    			
+    		System.out.println("Finished with initalization");
+    	}
+    	
+    }
 
     static public void main(String arg[]) throws Exception
     {
@@ -116,7 +154,6 @@ public class DFSCommand
     	String userInput = input.nextLine();
     	String[] args = new String[1];
     	args[0] = userInput;
-    	
         if (args.length < 1 ) {
             throw new IllegalArgumentException("Parameter: <port> <portToJoin>");
         }

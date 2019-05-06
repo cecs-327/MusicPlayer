@@ -7,14 +7,15 @@ package dfs;
 * @version 0.15
 * @since   03-3-2019
 */
-
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
 import java.net.*;
 import java.util.*;
 import java.io.*;
-import com.google.gson.Gson;
+
+import com.google.gson.*;
+import gson.*;
 /**
  * Chord extends from UnicastRemoteObject to support RMI.
  * It implements the ChordMessageInterface
@@ -39,6 +40,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
     long guid;
     // path prefix
     String prefix;
+    int size = 0;
 
 
 
@@ -558,36 +560,55 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 	       System.out.println("Cannot retrive id of successor or predecessor");
         }
     }
-
-
-
-@Override
-public void bulk(long page) {
-	// TODO Auto-generated method stub
+    
+	@Override
+	public void bulk(long page) {
+		// TODO Auto-generated method stub
+		
+	}
 	
-}
-
-
-
-@Override
-public void mapContext(Long guid, Mapper mapreducer, DFS dfs, String string) {
-	// TODO Auto-generated method stub
 	
-}
-
-
-
-@Override
-public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
-	// TODO Auto-generated method stub
+	@Override
+	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
+		// TODO Auto-generated method stub
+		
+	}	
 	
-}
+	@Override
+	public void onChordSize(long id, int i)throws RemoteException {
+		//create local variable size, set size = i when id is the id so need to return
+		System.out.println("Setting chord size");
+		if(id != this.getId())
+			successor.onChordSize(id, i++);
+		else {
+			size = i++;
+			System.out.println("Chord Size: " + size);
+		}
+			
+	}
 
 
 
-@Override
-public int onChordSize(long id, int i) {
-	// TODO Auto-generated method stub
-	return 0;
-}
+	@Override
+	public void mapContext(Long pageId, Mapper mapper, DFS coordinator, String file) throws Exception {
+		System.out.println("\nStarted mapContext");
+    	ChordMessageInterface peer = coordinator.chord.locateSuccessor(pageId);
+    	RemoteInputFileStream r = peer.get(pageId);
+    	
+    	r.connect();
+    	Scanner scan = new Scanner(r);
+    	scan.useDelimiter("\\A");
+    	 StringBuilder fileInfo = new StringBuilder();
+    	int j;
+    	while((j = r.read()) != -1){
+    		fileInfo.append((char)j);
+        }
+    	JsonParser parser = new JsonParser();
+    	JsonArray jsonArray = parser.parse(fileInfo.toString()).getAsJsonArray();
+    	for(int i = 0; i < jsonArray.size(); i++) {
+    		mapper.map("key", jsonArray.get(i), coordinator, file);
+    	}
+    	coordinator.onPageCompleted();
+		scan.close();
+	}
 }
