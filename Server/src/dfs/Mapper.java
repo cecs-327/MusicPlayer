@@ -17,7 +17,6 @@ import com.google.gson.JsonParser;
 public class Mapper implements MapReduceInterface {
 	String currentPage = "";
 	List<String> str = new ArrayList<String>();
-	JsonObject jArray = new JsonObject();
 
 	@Override
 	public void map(String key, JsonElement value, DFS context, String file) throws IOException {
@@ -48,9 +47,7 @@ public class Mapper implements MapReduceInterface {
 			JsonParser parser = new JsonParser();
 			try {
 				JsonObject jsonObj = (JsonObject) parser.parse(jsonObject);
-				if(songTitle.equals("Clavelitos")) {
-					System.out.println(jsonObject.toString());
-				}
+			
 				context.fileMapObject.emit(songTitle, jsonObj);
 			} catch (Exception e) {
 				System.out.println("Invalid json object\nStart Object\n" + jsonObject + "\nFinish Object");
@@ -78,7 +75,6 @@ public class Mapper implements MapReduceInterface {
 
 			System.out.println( str.toString());
 			context.appendPage(file, str.toString(), pageId);
-			jArray = new JsonObject();
 			str = new ArrayList<String>();
 		}
 
@@ -109,7 +105,6 @@ public class Mapper implements MapReduceInterface {
 		data.append("}");
 		
 		
-//		jArray.put(data.toString());
 		str.add(data.toString());
 		
 
