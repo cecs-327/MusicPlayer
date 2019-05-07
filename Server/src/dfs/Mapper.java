@@ -80,30 +80,30 @@ public class Mapper implements MapReduceInterface {
 
 //		System.out.println("Reduce called");
 		StringBuilder data = new StringBuilder();
-	
 		data.append("{");
 		int i = values.size();
-		int counter =0;
+		data.append("\"" + key + "\": [");
+//		int counter =0;
 		for (JsonElement ele : values) {
 			
 			i--;
-			if(counter==0) {
-			data.append("\"" + key + "\":");
-			}
-			if(counter>0) {
-				data.append("\"" + key +" "+ counter+ "\":");
-
-			}
+//			if(counter==0) {
+//			}
+//			if(counter>0) {
+//				data.append("\"" + key +" "+ counter+ "\":");
+//
+//			}
 			data.append(ele.toString());
-			counter++;
+//			counter++;
 
 			if (i > 0) {
 				data.append(",");
 			}
 		}
 		
-		data.append("}");
 		
+		data.append("]}");
+	
 		
 		str.add(data.toString());
 		
