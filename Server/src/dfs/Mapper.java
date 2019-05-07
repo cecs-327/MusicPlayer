@@ -16,7 +16,8 @@ import com.google.gson.JsonParser;
 
 public class Mapper implements MapReduceInterface {
 	String currentPage = "";
-	ArrayList<String> str = new ArrayList<String>();
+	List<String> str = new ArrayList<String>();
+	JsonObject jArray = new JsonObject();
 
 	@Override
 	public void map(String key, JsonElement value, DFS context, String file) throws IOException {
@@ -43,10 +44,13 @@ public class Mapper implements MapReduceInterface {
 				+ "\",\n\t\"fileName\": \"" + fileName + "\"\n}";
 		
 		
-		if (!songTitle.equals("")) {
+		if (!songTitle.equals("") && songTitle != null && !songTitle.isEmpty()) {
 			JsonParser parser = new JsonParser();
 			try {
 				JsonObject jsonObj = (JsonObject) parser.parse(jsonObject);
+				if(songTitle.equals("Clavelitos")) {
+					System.out.println(jsonObject.toString());
+				}
 				context.fileMapObject.emit(songTitle, jsonObj);
 			} catch (Exception e) {
 				System.out.println("Invalid json object\nStart Object\n" + jsonObject + "\nFinish Object");
@@ -56,6 +60,7 @@ public class Mapper implements MapReduceInterface {
 
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void reduce(String key, List<JsonElement> values, DFS context, String file, String pageId) throws Exception {
 		// Any Additional sorting can be done here
@@ -70,23 +75,41 @@ public class Mapper implements MapReduceInterface {
 		if (currentPage.equals(""))
 			currentPage = pageId;
 		else if (currentPage != pageId) {
-			System.out.println("All contents: "+ str.toString());
+
+			System.out.println( str.toString());
 			context.appendPage(file, str.toString(), pageId);
+			jArray = new JsonObject();
 			str = new ArrayList<String>();
 		}
 
-		System.out.println("Reduce called");
+//		System.out.println("Reduce called");
 		StringBuilder data = new StringBuilder();
-		data.append("{\"" + key + "\":");
+	
+		data.append("{");
 		int i = values.size();
+		int counter =0;
 		for (JsonElement ele : values) {
+			
 			i--;
+			if(counter==0) {
+			data.append("\"" + key + "\":");
+			}
+			if(counter>0) {
+				data.append("\"" + key +" "+ counter+ "\":");
+
+			}
 			data.append(ele.toString());
+			counter++;
+
 			if (i > 0) {
 				data.append(",");
 			}
 		}
+		
 		data.append("}");
+		
+		
+//		jArray.put(data.toString());
 		str.add(data.toString());
 		
 
