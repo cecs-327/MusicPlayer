@@ -78,23 +78,16 @@ public class Mapper implements MapReduceInterface {
 			str = new ArrayList<String>();
 		}
 
-//		System.out.println("Reduce called");
+		System.out.println("Reduce called");
 		StringBuilder data = new StringBuilder();
 		data.append("{");
 		int i = values.size();
 		data.append("\"" + key + "\": [");
-//		int counter =0;
 		for (JsonElement ele : values) {
 			
 			i--;
-//			if(counter==0) {
-//			}
-//			if(counter>0) {
-//				data.append("\"" + key +" "+ counter+ "\":");
-//
-//			}
+
 			data.append(ele.toString());
-//			counter++;
 
 			if (i > 0) {
 				data.append(",");
