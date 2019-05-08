@@ -1,5 +1,6 @@
 package services;
 import java.util.Comparator;
+import java.util.Set;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -11,11 +12,15 @@ public class SortBasedOnHotness implements Comparator<JsonObject> {
 
         	float leftObject;
         	float rightObject;
-
+        	Set<String>lKey = lhs.keySet();
+        	String lSong = lKey.iterator().next();
+        	Set<String>rKey = rhs.keySet();
+        	String rSong = rKey.iterator().next();
         	try
     		{
-        		leftObject = lhs.getAsJsonObject("song").get("hotttnesss").getAsFloat();
-            	rightObject = rhs.getAsJsonObject("song").get("hotttnesss").getAsFloat();
+        		leftObject = lhs.getAsJsonObject(lSong).get("hottness").getAsFloat();
+            	rightObject = rhs.getAsJsonObject(rSong).get("hottness").getAsFloat();
+            	
 
 
     		}catch(Exception e)
