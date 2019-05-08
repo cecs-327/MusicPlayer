@@ -30,16 +30,11 @@ public class pathHolder {
 	public static String newMusicFile = "songsClean";
 
   public static String readFile(String fileName) throws Exception {
-	  System.out.println("were in here");
 	  FilesJson filesJson = dfs.readMetaData();
-	  System.out.println("were in here3");
 	  StringBuilder fileInfo = new StringBuilder();
-	  System.out.println("were in here4");
 	  int numOfPages = getNumberOfPages(fileName);
-	  System.out.println("were in here5");
 	  RemoteInputFileStream rfs;
 	  Gson gson = new Gson();
-	  System.out.println("were in here2");
 	  for(int pageNum = 1; pageNum <= numOfPages; pageNum++)
 	  {
 		  rfs = dfs.read(fileName, pageNum);
