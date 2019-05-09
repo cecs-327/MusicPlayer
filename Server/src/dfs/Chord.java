@@ -569,7 +569,7 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 	
 	
 	@Override
-	public void reduceContext(Long guid, Mapper mapreducer, DFS dfs, String fileOutput) {
+	public void reduceContext(Long guid, DFS dfs, String fileOutput) {
 		// TODO Auto-generated method stub
 		
 	}	
@@ -577,12 +577,11 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 	@Override
 	public void onChordSize(long id, int i)throws RemoteException {
 		//create local variable size, set size = i when id is the id so need to return
-		System.out.println("Setting chord size");
-		if(id != this.getId())
-			successor.onChordSize(id, i++);
+		if(id != this.getId()) {
+			successor.onChordSize(id, i + 1);
+		}
 		else {
-			size = i++;
-			System.out.println("Chord Size: " + size);
+			size = i;
 		}
 			
 	}
@@ -590,25 +589,20 @@ public class Chord extends java.rmi.server.UnicastRemoteObject implements ChordM
 
 
 	@Override
-	public void mapContext(Long pageId, Mapper mapper, DFS coordinator, String file) throws Exception {
+	public String mapContext(Long pageId) throws Exception {
 		System.out.println("\nStarted mapContext");
-    	ChordMessageInterface peer = coordinator.chord.locateSuccessor(pageId);
+    	ChordMessageInterface peer = locateSuccessor(pageId);
     	RemoteInputFileStream r = peer.get(pageId);
     	
     	r.connect();
     	Scanner scan = new Scanner(r);
     	scan.useDelimiter("\\A");
-    	 StringBuilder fileInfo = new StringBuilder();
+    	StringBuilder fileInfo = new StringBuilder();
     	int j;
     	while((j = r.read()) != -1){
     		fileInfo.append((char)j);
         }
-    	JsonParser parser = new JsonParser();
-    	JsonArray jsonArray = parser.parse(fileInfo.toString()).getAsJsonArray();
-    	for(int i = 0; i < jsonArray.size(); i++) {
-    		mapper.map("key", jsonArray.get(i), coordinator, file);
-    	}
-    	coordinator.onPageCompleted();
-		scan.close();
+    	scan.close();
+    	return fileInfo.toString();
 	}
 }

@@ -8,8 +8,10 @@ import java.nio.file.*;
 import java.math.BigInteger;
 import java.security.*;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dfs.FileMapObject.Page;
 
@@ -38,8 +40,8 @@ import java.time.LocalDateTime;
 }
 */
 
-public class DFS {
-	public class PagesJson {
+public class DFS implements Serializable{
+	public class PagesJson implements Serializable{
 		Long guid;
 		Long size;
 		String creationTS;
@@ -101,7 +103,7 @@ public class DFS {
 		}
 	};
 
-	public class FileJson {
+	public class FileJson implements Serializable{
 		String name;
 		Long size;
 		String creationTS;
@@ -203,7 +205,7 @@ public class DFS {
 
 	};
 
-	public class FilesJson {
+	public class FilesJson implements Serializable{
 		List<FileJson> file;
 
 		public FilesJson() {
@@ -544,15 +546,13 @@ public class DFS {
 	
 	int fileInputCounter;
 	FileMapObject fileMapObject;
+	Mapper mapreducer = new Mapper();
 	
 	public void runMapReduce(String fileInput, String fileOutput) throws Exception {
 		fileInputCounter = 0;
-	    Mapper mapreducer = new Mapper();
 
 		filesJson = readMetaData();
-		
-	    chord.successor.onChordSize(chord.successor.getId(), 1); // Obtain the number of nodes currently active
-
+	    chord.successor.onChordSize(chord.getId(), 1); // Obtain the number of nodes currently active
 	    while(chord.size == 0) {
 	    	Thread.sleep(10);
 	    }
@@ -564,7 +564,7 @@ public class DFS {
     	 * Creating FileMap class
     	 */
     	createFile(fileOutput + ".map", interval, size);
-
+    	String temp;
       	//for each page in fileInput
     	for (int i = 0; i < filesJson.getSize(); i++) {
     		if (filesJson.getFileJson(i).getName().equalsIgnoreCase(fileInput)) {
@@ -575,8 +575,12 @@ public class DFS {
   					PagesJson page = inputList.get(j);
 
   					fileInputCounter++;
+  					System.out.println("finding peer");
   			    	ChordMessageInterface peer = chord.locateSuccessor(page.guid); //finds the chord which holds the page
-  			    	peer.mapContext(page.guid, mapreducer, this, fileOutput + ".map");
+  			    	System.out.println("Adding page information, pageguid: " + page.guid);
+  			    	temp = peer.mapContext(page.guid);
+  			    	mapContext(fileOutput + ".map", temp);
+  			    	System.out.println("Finished adding page info");
   				}
   				System.out.println("Done going through mapContext");
 //		    	fileMapObject.print();
@@ -644,17 +648,34 @@ public class DFS {
 		/**
 		 * For each page in pages we need to create a new page for the fileOutput
 		 */
+		BufferedWriter out = new BufferedWriter(new FileWriter(pageId + ".tmp", true));
+		out.write("[");
 		for (Map.Entry<String, List<JsonElement>> entry : data.entrySet()) {
-			if(i > data.size() - 6) {
-				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
-			}
+			String pageInfo = m.reduce(entry.getKey(), entry.getValue());
+			out.write("\n");
 			if(i == 1) {
-				pageId = "0";
-				m.reduce(entry.getKey(), entry.getValue(), this, fileOutput, pageId);
-			}	
+				out.write(pageInfo);
+			}else {
+				out.write(pageInfo + ",");
+			}
+			m.reduce(entry.getKey(), entry.getValue());
 			i--;
 		}
+		out.write("\n]");
+		out.close();
+		RemoteInputFileStream input = new RemoteInputFileStream(pageId + ".tmp");
+        append(fileOutput, input);
 		onPageCompleted();
+	}
+	
+	public void mapContext(String file, String fileInfo) throws Exception {
+    	Mapper mapreducer = new Mapper();
+    	JsonParser parser = new JsonParser();
+    	JsonArray jsonArray = parser.parse(fileInfo.toString()).getAsJsonArray();
+    	for(int i = 0; i < jsonArray.size(); i++) {
+    		mapreducer.map("key", jsonArray.get(i), fileMapObject, file);
+    	}
+    	onPageCompleted();
 	}
 		
 }

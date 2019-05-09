@@ -2,12 +2,14 @@ package dfs;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class FileMapObject {
+public class FileMapObject implements Serializable{
 	private ArrayList<Page> pages;
 	private String fileName;
 	
@@ -47,7 +49,7 @@ public class FileMapObject {
 		}
 	}
 	
-	public class Page{
+	public class Page implements Serializable{
 		private TreeMap<String, List<JsonElement>> data;
 		private String lowerBoundInterval;
 		private String pageId;

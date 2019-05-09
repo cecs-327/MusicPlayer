@@ -1,6 +1,8 @@
 package dfs;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +14,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class Mapper implements MapReduceInterface {
+public class Mapper implements MapReduceInterface, Serializable {
 	String currentPage = "";
-	JsonArray jArray = new JsonArray();
+	List<String> stringArray = new ArrayList<String>();
+	
 	@Override
-	public void map(String key, JsonElement value, DFS context, String file) throws IOException {
+	public void map(String key, JsonElement value, FileMapObject fileMapObject, String file) throws IOException {
 		//let newKey be the song title in value
 		//let newValue be a subset of value
 		String artistName = "";
@@ -38,7 +41,7 @@ public class Mapper implements MapReduceInterface {
 			JsonParser parser = new JsonParser();
 			try {
 				JsonObject jsonObj = (JsonObject)parser.parse(jsonObject);
-				context.fileMapObject.emit(songTitle, jsonObj);
+				fileMapObject.emit(songTitle, jsonObj);
 			}catch(Exception e) {
 				System.out.println("Invalid json object\nStart Object\n" + jsonObject + "\nFinish Object");
 			}
@@ -47,46 +50,36 @@ public class Mapper implements MapReduceInterface {
 			
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public void reduce(String key, List<JsonElement> values, DFS context, String file, String pageId) throws Exception {
-		//Any Additional sorting can be done here
+	public String reduce(String key, List<JsonElement> values) throws Exception {
+		// Any Additional sorting can be done here
 		/**
-		 * Key: Ti Monde (LP Version)
-		 * values:"artistName":"BeauSoleil"
-		 * 			"hottness":"0"
-		 * 			"fileName":"../mp3/bensound-sunny.mp3"
+		 * Key: Ti Monde (LP Version) values:"artistName":"BeauSoleil" "hottness":"0"
+		 * "fileName":"../mp3/bensound-sunny.mp3"
 		 * 
-		 * { Ti Monde (LP Version) : { 
-		 * 			artistName":"BeauSoleil",
-		 * 			"hottness":"0",
-		 * 			"fileName":"../mp3/bensound-sunny.mp3"
-		 * 			}
-		 * }
-		 * JsonObject or Parsing it differently
+		 * { Ti Monde (LP Version) : { artistName":"BeauSoleil", "hottness":"0",
+		 * "fileName":"../mp3/bensound-sunny.mp3" } } JsonObject or Parsing it
+		 * differently
 		 */
-		if(currentPage.equals(""))
-			currentPage = pageId;
-		else if(currentPage != pageId) {
-			System.out.println("\n\nJSONARRAY.TOSTRING\n\n" + jArray.toString());
-			context.appendPage(file, jArray.toString(), pageId);
-			jArray = new JsonArray();
-		}
-			
-		System.out.println("Reduce called");
 		StringBuilder data = new StringBuilder();
-		
-		data.append("{\"" + key + "\":");
+		data.append("{");
 		int i = values.size();
-		for(JsonElement ele : values) {
+		data.append("\"" + key + "\": [");
+		for (JsonElement ele : values) {
+			
 			i--;
+
 			data.append(ele.toString());
-			if(i > 0)
+
+			if (i > 0) {
 				data.append(",");
+			}
 		}
-		data.append("}");
-		System.out.println("\n" + data);
-		jArray.add(data.toString());
 		
+		data.append("]}");
+		return data.toString();
+
 	}
 	
 	private JsonObject sort(JsonObject valuesUnsorted) {

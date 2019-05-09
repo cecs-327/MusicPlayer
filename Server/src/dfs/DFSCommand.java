@@ -63,7 +63,9 @@ public class DFSCommand
 	              System.out.println("Deleted "+result[1]+" from the page");
 	            }
 	            else if(result[0].equals("mapreduce")) {
+	            	System.out.println("Starting mapreduce");
 	            	dfs.runMapReduce(result[1], result[2]);
+	            	System.out.println("Map Reduce ran");
 	            }
 	            else if (result[0].equals("read"))
 	            {

@@ -71,6 +71,7 @@ public class pathHolder {
 	  dfs.append(playlistFile, input2);
 	  RemoteInputFileStream input3 = new RemoteInputFileStream(songPath);
 	  dfs.append(songFile, input3);
+	  System.out.println("Initalization complete");
   }
   
   public static void initalizeDFS() throws Exception
